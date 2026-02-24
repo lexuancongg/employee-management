@@ -1,6 +1,6 @@
 package com.xuancong.employee_management.model;
 
-import com.xuancong.student_management.listener.CustomAuditingListener;
+import com.xuancong.employee_management.listener.CustomAuditingListener;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;

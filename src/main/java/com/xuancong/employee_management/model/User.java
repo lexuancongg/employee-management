@@ -19,7 +19,7 @@ public class User extends BaseAuditEntity {
     @Column(unique = true, nullable = false)
     private String username;
     private String password;
-    private boolean isActive;
+    private boolean enabled;
     private String email;
     private String phone;
 
