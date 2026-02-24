@@ -6,13 +6,13 @@ import jakarta.persistence.Table;
 import lombok.*;
 
 @Entity
-@Table(name = "Positions")
+@Table(name = "Position")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Positions extends BaseAuditEntity{
+public class Position extends BaseAuditEntity{
     @Id
     private Long id;
     private String name;
