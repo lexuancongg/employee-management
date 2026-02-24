@@ -27,6 +27,10 @@ public class Employee extends BaseAuditEntity {
     private Long avatarId;
 
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id",nullable = false)
+    private Position position;
+
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "department_id",nullable = false)

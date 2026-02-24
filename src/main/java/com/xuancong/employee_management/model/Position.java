@@ -2,8 +2,11 @@ package com.xuancong.employee_management.model;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "Position")
@@ -18,4 +21,7 @@ public class Position extends BaseAuditEntity{
     private String name;
     // level
 
+
+    @OneToMany(mappedBy = "position")
+    private List<Employee> employees;
 }

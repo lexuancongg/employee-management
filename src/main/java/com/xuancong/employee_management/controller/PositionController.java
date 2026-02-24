@@ -31,7 +31,36 @@ public class PositionController {
             @RequestParam(name = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false) int pageIndex
 
     ){
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(positionService.getPositions(pageIndex, pageSize, keyword));
 
     }
+
+
+    @GetMapping("/positions/{id}")
+    public ResponseEntity<PositionGetResponse> getPosition(@PathVariable long id) {
+        return ResponseEntity.ok(positionService.getPositionById(id));
+    }
+
+
+
+    @PutMapping("/positions/{id}")
+    public ResponseEntity<Void> updatePosition(@PathVariable long id,
+                                               @RequestBody PositionCreateRequest positionCreateRequest) {
+        positionService.updatePosition(id, positionCreateRequest);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+
+    @DeleteMapping("/positions/{id}")
+    public ResponseEntity<Void> deletePosition(@PathVariable long id) {
+        positionService.deletePosition(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+
+    }
+
+
+
 
 }
