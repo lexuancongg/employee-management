@@ -1,7 +1,10 @@
 package com.xuancong.employee_management.controller;
 
+import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
+import com.xuancong.employee_management.dto.employee.EmployeeDetailGetResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
+import com.xuancong.employee_management.dto.employee.EmployeePagingGetResponse;
 import com.xuancong.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +34,29 @@ public class EmployeeController {
     ){
         this.employeeService.updateEmployee(id, employeeCreateRequest);
         return ResponseEntity.noContent().build();
+    }
+
+
+    @GetMapping("/employees/{id}")
+    public ResponseEntity<EmployeeDetailGetResponse> getEmployee(@PathVariable Long id) {
+        return ResponseEntity.ok(
+                this.employeeService.getEmployee(id)
+        );
+    }
+
+    @GetMapping("/employees")
+    public ResponseEntity<EmployeePagingGetResponse> getEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
+            @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(defaultValue = "id,desc") String sort
+    ) {
+        return ResponseEntity.ok(
+                employeeService.getEmployees(name, code, email, departmentId, pageIndex, pageSize, sort)
+        );
     }
 
 }

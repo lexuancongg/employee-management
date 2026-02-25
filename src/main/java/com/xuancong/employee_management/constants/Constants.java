@@ -15,4 +15,7 @@ public class Constants {
         public static final String DEFAULT_PAGE_SIZE = "10";
 
     }
+    public final class Column{
+        public static final String ID = "id";
+    }
 }

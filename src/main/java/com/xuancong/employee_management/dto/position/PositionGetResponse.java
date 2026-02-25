@@ -11,4 +11,5 @@ public record PositionGetResponse(
                 position.getId(), position.getName()
         );
     }
+
 }

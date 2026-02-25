@@ -2,7 +2,9 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
+import com.xuancong.employee_management.dto.employee.EmployeeDetailGetResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
+import com.xuancong.employee_management.dto.employee.EmployeePagingGetResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.model.Employee;
@@ -11,13 +13,20 @@ import com.xuancong.employee_management.repository.DepartmentRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
 import com.xuancong.employee_management.repository.PositionRepository;
 import com.xuancong.employee_management.repository.UserRepository;
+import com.xuancong.employee_management.specification.EmployeeSpecification;
 import com.xuancong.employee_management.utils.PasswordUtils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.lang.model.element.NestingKind;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -128,6 +137,38 @@ public class EmployeeService {
         employee.setStatus(employeeCreateRequest.status());
         employee.setAvatarId(employeeCreateRequest.avatarId());
         this.setReferenceOrThrow(employeeCreateRequest,employee);
+
+    }
+
+    public EmployeeDetailGetResponse getEmployee(Long id){
+        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+        Long avatarId = employee.getAvatarId();
+        // lấy url ,
+        return  EmployeeDetailGetResponse.from(employee);
+
+    }
+
+    public EmployeePagingGetResponse getEmployees(String name,String code,String email,Long departmentId,
+                                                  int page,int size,String sort){
+
+
+
+        Pageable pageable = PageRequest.of(page,size);
+        Specification<Employee> specification = EmployeeSpecification.filter(name,code,email,departmentId);
+        Sort sortEmployee = Sort.by(Sort.Direction.DESC, Constants.Column.ID);
+        Page<Employee> employeePage = this.employeeRepository.findAll(specification,pageable);
+        List<Employee> employees = employeePage.getContent();
+        List<EmployeeGetResponse>  content = employees.stream()
+                .map(EmployeeGetResponse::fromEmployee)
+                .toList();
+
+        return  new EmployeePagingGetResponse(
+                content,
+                (int) employeePage.getTotalElements(),
+                employeePage.getTotalPages(),
+                employeePage.isLast()
+
+        );
 
     }
 }
