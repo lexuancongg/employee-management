@@ -1,7 +1,9 @@
 package com.xuancong.employee_management.controller;
 
+import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.department.DepartmentCreateRequest;
 import com.xuancong.employee_management.dto.department.DepartmentGetResponse;
+import com.xuancong.employee_management.dto.department.DepartmentPagingGetResponse;
 import com.xuancong.employee_management.model.Department;
 import com.xuancong.employee_management.service.DepartmentService;
 import jakarta.validation.Valid;
@@ -36,6 +38,16 @@ public class DepartmentController {
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
         this.departmentService.delete(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/departments")
+    public ResponseEntity<DepartmentPagingGetResponse> getDepartments(
+            @RequestParam(name = "pageIndex",required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
+            @RequestParam(name = "pageSize", required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
+            @RequestParam(name = "name",required = false,defaultValue = "") String name
+    ) {
+        return ResponseEntity
+                .ok(this.departmentService.getDepartments(pageIndex,pageSize,name));
     }
 
 
