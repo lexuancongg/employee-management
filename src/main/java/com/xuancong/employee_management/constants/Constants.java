@@ -10,6 +10,7 @@ public class Constants {
         public static final String EMAIL_DUPLICATE = "EMAIL_DUPLICATE";
         public static final String EMPLOYEE_NOT_FOUND = "EMPLOYEE_NOT_FOUND";
         public static final String DEPARTMENT_DUPLICATE = "DEPARTMENT_DUPLICATE";
+        public static final String DEPARTMENT_NOTFOUND = "DEPARTMENT_NOTFOUND";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";
