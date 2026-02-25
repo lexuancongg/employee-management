@@ -6,6 +6,9 @@ public class Constants {
         public static final String POSITION_NOT_FOUND = "POSITION_NOT_FOUND";
         public static final String POSITION_IN_USE = "POSITION_IN_USE";
         public static final String DEPARTMENT_NOT_FOUND = "DEPARTMENT_NOT_FOUND";
+        public static final String PHONE_DUPLICATE = "PHONE_DUPLICATE";
+        public static final String EMAIL_DUPLICATE = "EMAIL_DUPLICATE";
+        public static final String EMPLOYEE_NOT_FOUND = "EMPLOYEE_NOT_FOUND";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";

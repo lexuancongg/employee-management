@@ -12,4 +12,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
         FROM Employee e
     """)
     String findMaxEmployeeCode();
+
+    boolean existsByPhoneAndIdNot(String phone, Long id);
+    boolean existsByEmailAndIdNot(String email, Long id);
 }

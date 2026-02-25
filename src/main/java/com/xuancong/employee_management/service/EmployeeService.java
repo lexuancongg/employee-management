@@ -3,6 +3,7 @@ package com.xuancong.employee_management.service;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
+import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.model.Employee;
 import com.xuancong.employee_management.model.User;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.lang.model.element.NestingKind;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -31,15 +33,11 @@ public class EmployeeService {
     private final MailService mailService;
     private final DepartmentRepository departmentRepository;
     public EmployeeGetResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
+        this.validateEmployeeInfo(employeeCreateRequest,null);
         Employee employee = employeeCreateRequest.toBaseEmployee();
         String employeeCode = this.generateEmployeeCode();
         employee.setEmployeeCode(employeeCode);
-        this.setEntityIfExistsOrThrow(employeeCreateRequest.positionId(), positionRepository::findById ,
-                Constants.ErrorKey.POSITION_NOT_FOUND,employee::setPosition);
-        this.setEntityIfExistsOrThrow(employeeCreateRequest.departmentId(),departmentRepository::findById,
-                Constants.ErrorKey.DEPARTMENT_NOT_FOUND,employee::setDepartment);
-
-
+        this.setReferenceOrThrow(employeeCreateRequest,employee);
         // tạo user
         String rawPassword = this.genericAccount(employeeCreateRequest, employeeCode,employee);
         employeeRepository.save(employee);
@@ -48,6 +46,29 @@ public class EmployeeService {
 
     }
 
+    private void setReferenceOrThrow(EmployeeCreateRequest employeeCreateRequest,Employee employee){
+        this.setEntityIfExistsOrThrow(employeeCreateRequest.positionId(), positionRepository::findById ,
+                Constants.ErrorKey.POSITION_NOT_FOUND,employee::setPosition);
+        this.setEntityIfExistsOrThrow(employeeCreateRequest.departmentId(),departmentRepository::findById,
+                Constants.ErrorKey.DEPARTMENT_NOT_FOUND,employee::setDepartment);
+
+    }
+
+    private void validateEmployeeInfo(EmployeeCreateRequest employeeCreateRequest,Long employeeId) {
+        this.validateUnique(employeeCreateRequest,employeeId);
+    }
+    private void validateUnique(EmployeeCreateRequest employeeCreateRequest ,Long employeeId){
+        this.validateUniqueProperty(employeeId,employeeRepository::existsByPhoneAndIdNot,
+                employeeCreateRequest.phone(),Constants.ErrorKey.PHONE_DUPLICATE);
+        this.validateUniqueProperty(employeeId,employeeRepository::existsByEmailAndIdNot,
+                employeeCreateRequest.email(),Constants.ErrorKey.EMAIL_DUPLICATE);
+    }
+
+    private <T,E> void validateUniqueProperty(E id, BiFunction<T, E, Boolean> finder, T property, String errorKey){
+        if(finder.apply(property,id)){
+            throw new DuplicateResourceException(errorKey,property);
+        }
+    }
     // có thể trùng code nếu hai req gởi cùng lúc=> chạy song song hai thread => fix bằng SEQUENCE
     private String generateEmployeeCode() {
         String maxCode = employeeRepository.findMaxEmployeeCode();
@@ -83,5 +104,30 @@ public class EmployeeService {
 
     private void sendEmail(EmployeeCreateRequest employeeCreateRequest ,String employeeCode,String rawPassword) {
         this.mailService.sendAccountEmail(employeeCreateRequest.email(),employeeCode,rawPassword);
+    }
+
+    public void updateEmployee(Long id ,EmployeeCreateRequest employeeCreateRequest) {
+        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+        this.validateEmployeeInfo(employeeCreateRequest,id);
+        this.updateFieldEmployee(employeeCreateRequest,employee);
+        employeeRepository.save(employee);
+    }
+    private <E,T> T validateExitedEmployee(E id,JpaRepository<T,E> finder,String errorKey) {
+        return finder.findById(id)
+                .orElseThrow(() -> new NotFoundException(errorKey,id));
+
+    }
+
+    public void updateFieldEmployee(EmployeeCreateRequest employeeCreateRequest , Employee employee){
+        employee.setPhone(employeeCreateRequest.phone());
+        employee.setEmail(employeeCreateRequest.email());
+        employee.setName(employeeCreateRequest.name());
+        employee.setGender(employeeCreateRequest.gender());
+        employee.setBirthday(employeeCreateRequest.birthday());
+        employee.setHireDate(employeeCreateRequest.hireDate());
+        employee.setStatus(employeeCreateRequest.status());
+        employee.setAvatarId(employeeCreateRequest.avatarId());
+        this.setReferenceOrThrow(employeeCreateRequest,employee);
+
     }
 }
