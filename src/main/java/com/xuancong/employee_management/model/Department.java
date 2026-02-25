@@ -12,6 +12,7 @@ import lombok.*;
 @Builder
 public class Department extends BaseAuditEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;

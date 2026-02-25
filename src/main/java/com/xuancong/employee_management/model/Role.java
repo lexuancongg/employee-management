@@ -1,8 +1,6 @@
 package com.xuancong.employee_management.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -14,6 +12,7 @@ import lombok.*;
 @Builder
 public class Role extends BaseAuditEntity{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String description;

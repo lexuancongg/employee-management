@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Attendance extends BaseAuditEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -1,0 +1,23 @@
+
+
+spring:
+  application:
+    name: employee-management
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: congle.190904@gmail.com
+    password: lvev jwzo sapo fgio
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/employee_manage
+    username: xuancong
+    password: xuancong
+
+  jpa:
+    hibernate:
+      ddl-auto: update

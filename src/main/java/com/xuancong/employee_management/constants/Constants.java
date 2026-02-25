@@ -5,6 +5,7 @@ public class Constants {
         public static final String POSITION_NAME_EXITED = "POSITION_NAME_EXITED";
         public static final String POSITION_NOT_FOUND = "POSITION_NOT_FOUND";
         public static final String POSITION_IN_USE = "POSITION_IN_USE";
+        public static final String DEPARTMENT_NOT_FOUND = "DEPARTMENT_NOT_FOUND";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";

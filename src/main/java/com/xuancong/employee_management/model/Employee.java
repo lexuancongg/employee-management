@@ -15,10 +15,13 @@ import java.time.LocalDate;
 @Builder
 public class Employee extends BaseAuditEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true, nullable = false)
     private String employeeCode;
     private String name;
     private String gender;
+    @Column(unique = true)
     private String email;
     private String phone;
     private LocalDate birthday;
@@ -32,7 +35,7 @@ public class Employee extends BaseAuditEntity {
     private Position position;
 
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id",nullable = false)
     private Department department;
 

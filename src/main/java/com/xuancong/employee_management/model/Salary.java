@@ -15,6 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Salary {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal baseSalary;
 
