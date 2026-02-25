@@ -171,4 +171,15 @@ public class EmployeeService {
         );
 
     }
+
+    public void deleteEmployee(Long id){
+        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+
+        if (employee.getUser() != null) {
+            userRepository.delete(employee.getUser());
+        }
+
+        employeeRepository.delete(employee);
+
+    }
 }
