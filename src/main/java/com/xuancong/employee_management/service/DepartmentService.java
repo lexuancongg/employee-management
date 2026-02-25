@@ -5,8 +5,10 @@ import com.xuancong.employee_management.dto.department.DepartmentCreateRequest;
 import com.xuancong.employee_management.dto.department.DepartmentGetResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
+import com.xuancong.employee_management.exception.ResourceInUseException;
 import com.xuancong.employee_management.model.Department;
 import com.xuancong.employee_management.repository.DepartmentRepository;
+import com.xuancong.employee_management.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -18,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DepartmentService {
     private final DepartmentRepository departmentRepository;
+    private final EmployeeRepository employeeRepository;
+
     public DepartmentGetResponse createDepartment(DepartmentCreateRequest departmentCreateRequest){
         this.validateDepartmentName(departmentCreateRequest.name(),null);
         Department department = departmentCreateRequest.toDepartment();
@@ -46,6 +50,15 @@ public class DepartmentService {
     private <E,T> T validateExitedDepartment(E id, JpaRepository<T,E> finder, String errorKey) {
         return finder.findById(id)
                 .orElseThrow(() -> new NotFoundException(errorKey,id));
+
+    }
+
+    public void delete(Long id){
+        Department department = this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
+        if(employeeRepository.existsByDepartment_Id(department.getId())){
+            throw new ResourceInUseException(Constants.ErrorKey.DEPARTMENT_CONSTRAINT, department.getId());
+        }
+        this.departmentRepository.delete(department);
 
     }
 }

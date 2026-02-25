@@ -32,5 +32,11 @@ public class DepartmentController {
     }
 
 
+    @DeleteMapping("/departments/{id}")
+    public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
+        this.departmentService.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
 
 }
