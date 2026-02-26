@@ -5,6 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Optional;
+
 public interface EmployeeRepository extends JpaRepository<Employee, Long> , JpaSpecificationExecutor<Employee> {
     boolean existsByPosition_Id(Long positionId);
 
@@ -18,4 +20,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> , JpaS
     boolean existsByEmailAndIdNot(String email, Long id);
 
     boolean existsByDepartment_Id(Long departmentId);
+
+    Optional<Employee> findByUser_Username(String userUsername);
 }
