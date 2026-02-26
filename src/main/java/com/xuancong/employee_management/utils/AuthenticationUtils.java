@@ -21,4 +21,10 @@ public class AuthenticationUtils {
 
 
 
+    public static boolean hasRole(String role) {
+        Authentication authentication = getAuthentication();
+        return authentication.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals(role));
+
+    }
 }

@@ -2,6 +2,9 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.attendance.AttendanceGetResponse;
+import com.xuancong.employee_management.dto.attendance.AttendancePagingGetResponse;
+import com.xuancong.employee_management.dto.attendance.AttendanceStatusResponse;
+import com.xuancong.employee_management.exception.AccessDeniedException;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.model.Attendance;
@@ -13,11 +16,16 @@ import com.xuancong.employee_management.repository.UserRepository;
 import com.xuancong.employee_management.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.bcel.Const;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -68,7 +76,7 @@ public class AttendanceService {
     }
 
 
-    public Attendance getAttendanceOrThrow(Employee employee , LocalDate workDate){
+    private Attendance getAttendanceOrThrow(Employee employee , LocalDate workDate){
         return attendanceRepository.findByEmployeeAndWorkDate(employee, workDate)
                 .orElseThrow(()-> new NotFoundException(Constants.ErrorKey.CHECKIN_NOT_FOUND,workDate));
     }
@@ -84,6 +92,57 @@ public class AttendanceService {
         }
         attendance.setCheckOut(timeCheckOut);
         attendanceRepository.save(attendance);
+
+    }
+
+    public AttendanceStatusResponse getTodayAttendance(){
+        Employee employee = this.getEmployee();
+        LocalDate workDate = LocalDate.now();
+        Attendance attendance =  attendanceRepository.findByEmployeeAndWorkDate(
+                employee,workDate
+        ).orElse(null);
+        return  AttendanceStatusResponse.from(attendance,employee.getId(),workDate);
+
+    }
+
+    private Long getCurrentEmployeeId(){
+        String username = AuthenticationUtils.extractUsername();
+        Employee employee = employeeRepository
+                .findByUser_Username(username)
+                .orElseThrow(() ->
+                        new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND, username));
+
+        return employee.getId();
+    }
+
+
+
+    @PreAuthorize("hasRole('ADMIN') or #employeeId == null")
+    public AttendancePagingGetResponse getAttendances(LocalDate from, LocalDate to, int page,int size,Long employeeId){
+        Pageable pageable = PageRequest.of(page,size);
+        Page<Attendance> attendancePage;
+        if(employeeId == null){
+           employeeId = getCurrentEmployeeId();
+        }else {
+            if(!AuthenticationUtils.hasRole("ADMIN") && !employeeId.equals(getCurrentEmployeeId())){
+                throw new AccessDeniedException(Constants.ErrorKey.FORBIDDEN);
+            }
+        }
+        attendancePage =
+                attendanceRepository.findByEmployeeIdAndWorkDateBetween(
+                        employeeId, from, to, pageable
+                );
+
+        List<AttendanceGetResponse> content = attendancePage.getContent().stream()
+                .map(AttendanceGetResponse::fromAttendance)
+                .toList();
+        return  new AttendancePagingGetResponse(
+                content,
+                (int) attendancePage.getTotalElements(),
+                attendancePage.getTotalPages(),
+                attendancePage.isLast()
+        );
+
 
     }
 }
