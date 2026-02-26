@@ -44,20 +44,46 @@ public class AttendanceService {
     }
 
     private void validateDuplicateCheckIn(Employee employee , LocalDate workDate){
-        if(attendanceRepository.existsByEmployeeAndWorkDate(employee, workDate)){
+        if(this.checkExitedAttendance(employee,workDate)){
             throw new DuplicateResourceException(Constants.ErrorKey.CHECKIN_DUPLICATE,workDate);
         }
     }
 
+    private boolean checkExitedAttendance(Employee employee , LocalDate workDate){
+        return attendanceRepository.existsByEmployeeAndWorkDate(employee, workDate);
+
+    }
+
+
     private Employee getEmployee(){
         String username = AuthenticationUtils.extractUsername();
-        Optional<User> optionalUser = userRepository.findByUsername(username);
-        if(optionalUser.isEmpty()){
-            throw  new NotFoundException(Constants.ErrorKey.USERNAME_NOT_FOUND,username);
-        }
-        User user = optionalUser.get();
-        return  employeeRepository.findByUser_Username(user.getUsername())
+//        Optional<User> optionalUser = userRepository.findByUsername(username);
+//        if(optionalUser.isEmpty()){
+//            throw  new NotFoundException(Constants.ErrorKey.USERNAME_NOT_FOUND,username);
+//        }
+//        User user = optionalUser.get();
+        return  employeeRepository.findByUser_Username(username)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND,username));
+
+    }
+
+
+    public Attendance getAttendanceOrThrow(Employee employee , LocalDate workDate){
+        return attendanceRepository.findByEmployeeAndWorkDate(employee, workDate)
+                .orElseThrow(()-> new NotFoundException(Constants.ErrorKey.CHECKIN_NOT_FOUND,workDate));
+    }
+
+    public void checkOut(){
+        Employee employee = this.getEmployee();
+        LocalDate workDate = LocalDate.now();
+        LocalDateTime timeCheckOut = LocalDateTime.now();
+
+        Attendance attendance = this.getAttendanceOrThrow(employee, workDate);
+        if(attendance.getCheckOut()!=null){
+            throw new DuplicateResourceException(Constants.ErrorKey.CHECKOUT_DUPLICATE, workDate);
+        }
+        attendance.setCheckOut(timeCheckOut);
+        attendanceRepository.save(attendance);
 
     }
 }
