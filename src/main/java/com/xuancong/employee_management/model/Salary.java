@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "Salary")
@@ -19,12 +19,13 @@ public class Salary {
     private Long id;
     private BigDecimal baseSalary;
 
-    @ManyToOne(cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
-    private LocalDateTime endDate;
-    private LocalDateTime effectiveDate;
+    private LocalDate endDate;
+    private LocalDate effectiveDate;
     private boolean isActive;
+    private String note;
 
 }
