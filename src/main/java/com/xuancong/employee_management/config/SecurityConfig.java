@@ -2,6 +2,7 @@ package com.xuancong.employee_management.config;
 
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.UserRepository;
+import com.xuancong.employee_management.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -13,10 +14,10 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -25,9 +26,13 @@ import org.springframework.web.filter.CorsFilter;
 @EnableWebSecurity
 public class SecurityConfig {
     private final UserRepository userRepository;
+    private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(UserRepository userRepository) {
+    public SecurityConfig(UserRepository userRepository,JwtAuthFilter jwtAuthFilter) {
+
         this.userRepository = userRepository;
+        this.jwtAuthFilter = jwtAuthFilter;
+
     }
 
 
@@ -41,15 +46,11 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/blog/**").permitAll()
-//                        .anyRequest().authenticated()
-                                .anyRequest().permitAll()
+                        .requestMatchers("/api").permitAll()
+                        .anyRequest().authenticated()
                 )
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 // tự động thêm một filter usernameAuthenticationFilter vào chuổi filter
-//                .formLogin(formLogin -> formLogin
-//                        .loginPage("/login")
-//                        .permitAll()
-//                )
                 .formLogin(Customizer.withDefaults())
                 .rememberMe(Customizer.withDefaults());
 
@@ -100,9 +101,5 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
         return daoAuthenticationProvider;
     }
-
-
-
-
 
 }
