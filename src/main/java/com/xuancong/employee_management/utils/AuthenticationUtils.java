@@ -1,18 +1,26 @@
 package com.xuancong.employee_management.utils;
 
+import com.xuancong.employee_management.exception.AccessDeniedException;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 public class AuthenticationUtils {
 
-    public static String extractUsername() {
+    public static Long extractUserId() {
         Authentication authentication = getAuthentication();
+
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
-            // bắn ra ngoại leej
+            throw new AccessDeniedException("Unauthenticated");
         }
-        assert authentication != null;
-        return authentication.getName();
+
+        Object principal = authentication.getPrincipal();
+
+        if (principal instanceof Long userId) {
+            return userId;
+        }
+
+        throw new IllegalStateException("Invalid principal type");
     }
 
     public static Authentication getAuthentication() {

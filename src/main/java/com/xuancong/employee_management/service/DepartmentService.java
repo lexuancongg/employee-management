@@ -12,6 +12,8 @@ import com.xuancong.employee_management.repository.DepartmentRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import org.aspectj.apache.bcel.classfile.Constant;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -29,6 +31,7 @@ public class DepartmentService {
     private final DepartmentRepository departmentRepository;
     private final EmployeeRepository employeeRepository;
 
+    @CacheEvict(value = "departments", allEntries = true)
     public DepartmentGetResponse createDepartment(DepartmentCreateRequest departmentCreateRequest){
         this.validateDepartmentName(departmentCreateRequest.name(),null);
         Department department = departmentCreateRequest.toDepartment();
@@ -60,6 +63,7 @@ public class DepartmentService {
 
     }
 
+    @CacheEvict(value = "departments", allEntries = true)
     public void delete(Long id){
         Department department = this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
         if(employeeRepository.existsByDepartment_Id(department.getId())){
@@ -69,6 +73,10 @@ public class DepartmentService {
 
     }
 
+    @Cacheable(
+            value = "departments",
+            key = "#page + ':' + #size + ':' + #name"
+    )
     public DepartmentPagingGetResponse getDepartments(int page,int size,String name) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Department> departmentPage = departmentRepository.findByNameContainingIgnoreCase(name, pageable);

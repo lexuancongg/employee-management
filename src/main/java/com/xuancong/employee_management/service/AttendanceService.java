@@ -9,13 +9,12 @@ import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.model.Attendance;
 import com.xuancong.employee_management.model.Employee;
-import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.AttendanceRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
 import com.xuancong.employee_management.repository.UserRepository;
 import com.xuancong.employee_management.utils.AuthenticationUtils;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.bcel.Const;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -38,7 +36,7 @@ public class AttendanceService {
 
 
     public AttendanceGetResponse checkIn(){
-        Employee employee = this.getEmployee();
+        Employee employee = this.getEmployeeCurrent();
         LocalDate workDate = LocalDate.now();
         LocalDateTime timeCheckIn = LocalDateTime.now();
         this.validateDuplicateCheckIn(employee,workDate);
@@ -63,15 +61,10 @@ public class AttendanceService {
     }
 
 
-    private Employee getEmployee(){
-        String username = AuthenticationUtils.extractUsername();
-//        Optional<User> optionalUser = userRepository.findByUsername(username);
-//        if(optionalUser.isEmpty()){
-//            throw  new NotFoundException(Constants.ErrorKey.USERNAME_NOT_FOUND,username);
-//        }
-//        User user = optionalUser.get();
-        return  employeeRepository.findByUser_Username(username)
-                .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND,username));
+    private Employee getEmployeeCurrent(){
+        Long userId = AuthenticationUtils.extractUserId();
+        return  employeeRepository.findByUser_Id(userId)
+                .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND,userId));
 
     }
 
@@ -82,7 +75,7 @@ public class AttendanceService {
     }
 
     public void checkOut(){
-        Employee employee = this.getEmployee();
+        Employee employee = this.getEmployeeCurrent();
         LocalDate workDate = LocalDate.now();
         LocalDateTime timeCheckOut = LocalDateTime.now();
 
@@ -95,8 +88,16 @@ public class AttendanceService {
 
     }
 
+
+
+    // read-state => gọi nhiều
+    // fix sau : key được gọi lại mỗi lâần chạy fuction => query db nhiều lần => tốn performain => fix bằng userID có sẵn trong security context
+    @Cacheable(
+            value = "attendance:today",
+            key = "#root.target.getEmployeeCurrent().getId() + ':' + T(java.time.LocalDate).now()"
+    )
     public AttendanceStatusResponse getTodayAttendance(){
-        Employee employee = this.getEmployee();
+        Employee employee = this.getEmployeeCurrent();
         LocalDate workDate = LocalDate.now();
         Attendance attendance =  attendanceRepository.findByEmployeeAndWorkDate(
                 employee,workDate
@@ -105,15 +106,7 @@ public class AttendanceService {
 
     }
 
-    private Long getCurrentEmployeeId(){
-        String username = AuthenticationUtils.extractUsername();
-        Employee employee = employeeRepository
-                .findByUser_Username(username)
-                .orElseThrow(() ->
-                        new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND, username));
 
-        return employee.getId();
-    }
 
 
 
@@ -122,9 +115,9 @@ public class AttendanceService {
         Pageable pageable = PageRequest.of(page,size);
         Page<Attendance> attendancePage;
         if(employeeId == null){
-           employeeId = getCurrentEmployeeId();
+           employeeId = getEmployeeCurrent().getId();
         }else {
-            if(!AuthenticationUtils.hasRole("ADMIN") && !employeeId.equals(getCurrentEmployeeId())){
+            if(!AuthenticationUtils.hasRole("ADMIN") && !employeeId.equals(getEmployeeCurrent().getId())){
                 throw new AccessDeniedException(Constants.ErrorKey.FORBIDDEN);
             }
         }
