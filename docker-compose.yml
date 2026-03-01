@@ -27,6 +27,18 @@ services:
     networks:
       - lexuancong-network
 
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis:/data
+    command: redis-server --appendonly yes
+    networks:
+      - lexuancong-network
+    restart: unless-stopped
+
 networks:
   #  các service có cùng mạng thì cos thể kết nối với nhau
   lexuancong-network:
