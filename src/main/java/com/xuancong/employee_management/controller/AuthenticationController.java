@@ -1,19 +1,13 @@
 package com.xuancong.employee_management.controller;
 
-import com.xuancong.employee_management.dto.auth.AuthRequest;
-import com.xuancong.employee_management.dto.auth.AuthenticatedUserResponse;
-import com.xuancong.employee_management.dto.auth.AuthStateResponse;
-import com.xuancong.employee_management.dto.auth.AuthenticationResponse;
+import com.xuancong.employee_management.dto.auth.*;
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.UserRepository;
 import com.xuancong.employee_management.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
 
@@ -44,9 +38,19 @@ public class AuthenticationController {
             @RequestBody AuthRequest authRequest
             ){
         return ResponseEntity.ok(
-                authenticationService.authenticate(authRequest)
+                authenticationService.login(authRequest)
         );
     }
+
+    @PostMapping("/authentication/refresh")
+    public ResponseEntity<AuthenticationResponse> refresh(
+            @RequestBody RefreshRequest refreshRequest
+    ){
+        return ResponseEntity.ok(
+                this.authenticationService.refresh(refreshRequest)
+        );
+    }
+
 
 
 

@@ -14,16 +14,29 @@ import java.util.Date;
 public class JwtService {
     @Value("${jwt.signerKey}")
     private  String SECRET;
+    private static final long ACCESS_TOKEN_EXP_MS = 15 * 60 * 1000;
+    private static final long REFRESH_TOKEN_EXP_MS = 7L * 24 * 60 * 60 * 1000;
 
     private Key getSignKey() {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateToken(User user) {
+    public String generateAccessToken(User user) {
         return Jwts.builder()
                 .subject(user.getId().toString())
+                .claim("type", "access")
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
+                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXP_MS))
+                .signWith(getSignKey())
+                .compact();
+    }
+    public String generateRefreshToken(User user, String jti) {
+        return Jwts.builder()
+                .subject(user.getId().toString())
+                .claim("type", "refresh")
+                .id(jti)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXP_MS))
                 .signWith(getSignKey())
                 .compact();
     }
@@ -47,6 +60,11 @@ public class JwtService {
         } catch (Exception e) {
             return false;
         }
+    }
+
+
+    public long getAccessTokenExpirationSeconds() {
+        return ACCESS_TOKEN_EXP_MS / 1000;
     }
 
 
