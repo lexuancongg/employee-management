@@ -1,51 +1,36 @@
 package com.xuancong.employee_management.service;
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.security.Keys;
-import org.springframework.beans.factory.annotation.Value;
+import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.auth.AuthRequest;
+import com.xuancong.employee_management.dto.auth.AuthenticationResponse;
+import com.xuancong.employee_management.exception.BadCredentialsException;
+import com.xuancong.employee_management.exception.NotFoundException;
+import com.xuancong.employee_management.model.User;
+import com.xuancong.employee_management.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.Date;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class AuthenticationService {
-    @Value("${jwt.signerKey}")
-    private  String SECRET;
+    private  final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final JwtService jwtService;
 
-    private Key getSignKey() {
-        return Keys.hmacShaKeyFor(SECRET.getBytes());
-    }
+    public AuthenticationResponse authenticate(AuthRequest authRequest){
+        User user = userRepository.findByUsername(authRequest.getUsername())
+                .orElseThrow(()-> new BadCredentialsException(Constants.ErrorKey.USER_NOT_FOUND, authRequest.getUsername()));
 
-    public String generateToken(Long userId) {
-        return Jwts.builder()
-                .subject(userId.toString())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 86400000))
-                .signWith(getSignKey())
-                .compact();
-    }
-
-    public String extractUserId(String token) {
-        return Jwts.parser()
-                .verifyWith((SecretKey) getSignKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
-    }
-
-    public boolean isValid(String token) {
-        try {
-            Jwts.parser()
-                    .verifyWith((SecretKey) getSignKey())
-                    .build()
-                    .parseSignedClaims(token);
-            return true;
-        } catch (Exception e) {
-            return false;
+        boolean authenticated = passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
+        if(!authenticated){
+            throw new BadCredentialsException(Constants.ErrorKey.PASSWORD_NOT_VALID, authRequest.getPassword());
         }
+        String token  = jwtService.generateToken(user);
+
+
     }
 
 }

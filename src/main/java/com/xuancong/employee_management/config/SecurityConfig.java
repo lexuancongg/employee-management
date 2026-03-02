@@ -2,7 +2,6 @@ package com.xuancong.employee_management.config;
 
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.UserRepository;
-import com.xuancong.employee_management.service.AuthenticationService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

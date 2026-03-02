@@ -17,6 +17,8 @@ public class Constants {
         public static final String CHECKIN_NOT_FOUND = "CHECKIN_NOT_FOUND";
         public static final String CHECKOUT_DUPLICATE = "CHECKOUT_DUPLICATE";
         public static final String FORBIDDEN = "FORBIDDEN";
+        public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
+        public static final String PASSWORD_NOT_VALID = "PASSWORD_NOT_VALID";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";

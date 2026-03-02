@@ -47,15 +47,15 @@ public class DepartmentService {
     private boolean  checkExistedDepartmentName(String name,Long id){
         return  this.departmentRepository.existsByNameIgnoreCaseAndIdNot(name,id);
     }
-
-    public void updateDepartment(Long id, DepartmentCreateRequest departmentCreateRequest){
-         Department department =
-                 this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
-        this.validateDepartmentName(departmentCreateRequest.name(),id);
-        department.setName(departmentCreateRequest.name());
-        this.departmentRepository.save(department);
-
-    }
+    
+        public void updateDepartment(Long id, DepartmentCreateRequest departmentCreateRequest){
+             Department department =
+                     this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
+            this.validateDepartmentName(departmentCreateRequest.name(),id);
+            department.setName(departmentCreateRequest.name());
+            this.departmentRepository.save(department);
+    
+        }
 
     private <E,T> T validateExitedDepartment(E id, JpaRepository<T,E> finder, String errorKey) {
         return finder.findById(id)
