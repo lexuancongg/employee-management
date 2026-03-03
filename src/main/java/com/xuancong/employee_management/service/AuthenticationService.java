@@ -4,18 +4,18 @@ import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.auth.AuthRequest;
 import com.xuancong.employee_management.dto.auth.AuthenticationResponse;
 import com.xuancong.employee_management.dto.auth.RefreshRequest;
+import com.xuancong.employee_management.enums.TokenType;
 import com.xuancong.employee_management.exception.BadCredentialsException;
 import com.xuancong.employee_management.exception.UnauthorizedException;
 import com.xuancong.employee_management.model.RefreshToken;
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.RefreshTokenRepository;
 import com.xuancong.employee_management.repository.UserRepository;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 @Transactional
@@ -32,10 +32,12 @@ public class AuthenticationService {
 
         boolean authenticated = passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
         if(!authenticated){
-            throw new BadCredentialsException(Constants.ErrorKey.PASSWORD_NOT_VALID, authRequest.getPassword());
+            throw new BadCredentialsException(
+                    Constants.ErrorKey.PASSWORD_NOT_VALID, authRequest.getPassword()
+            );
         }
-        String accessToken  = jwtService.generateAccessToken(user);
-        String refreshToken = jwtService.generateRefreshToken(user);
+        String accessToken  = jwtService.generateToken(user,TokenType.ACCESS);
+        String refreshToken = jwtService.generateToken(user,TokenType.REFRESH);
         long expiresIn = jwtService.getAccessTokenExpirationSeconds();
         return new AuthenticationResponse(accessToken, refreshToken, expiresIn);
 
@@ -44,21 +46,31 @@ public class AuthenticationService {
 
     public AuthenticationResponse refresh(RefreshRequest refreshRequest){
         String refreshToken = refreshRequest.refreshToken();
-        if(!jwtService.isValid(refreshToken)){
+        if(!jwtService.verifyJwt(refreshToken)){
             throw new UnauthorizedException(Constants.ErrorKey.REFRESH_TOKEN_INVALID, refreshToken);
         }
-        String type = jwtService.extractType(refreshToken);
-        if (!"refresh".equals(type)) {
+        Claims claimsJwt = jwtService.parseClaims(refreshToken);
+
+        String jti = claimsJwt.getId();
+        String type = claimsJwt.get("type", String.class);
+
+        if (jti == null || type == null) {
+            throw new UnauthorizedException("Invalid token");
+        }
+
+        if (!TokenType.REFRESH.name().toLowerCase().equals(type)) {
             throw new UnauthorizedException("Invalid token type");
         }
-        String jti = jwtService.extractJti(refreshToken);
         RefreshToken refreshSaved = refreshTokenRepository.findById(jti)
                 .orElseThrow(()-> new UnauthorizedException("Refresh token revoked"));
         User user = refreshSaved.getUser();
-        String newAccessToken = jwtService.generateAccessToken(user);
-        String newRefreshToken = jwtService.generateRefreshToken(user);
+        String newAccessToken = jwtService.generateToken(user, TokenType.ACCESS);
+        String newRefreshToken = jwtService.generateToken(user,TokenType.REFRESH);
+
         refreshTokenRepository.delete(refreshSaved);
-        String newJti = jwtService.extractJti(newRefreshToken);
+        Claims newClaims = jwtService.parseClaims(newRefreshToken);
+
+        String newJti = newClaims.getId();
         refreshTokenRepository.save(
                 RefreshToken.builder()
                         .id(newJti)
@@ -69,7 +81,7 @@ public class AuthenticationService {
         return  new AuthenticationResponse(
                 newAccessToken,
                 newRefreshToken,
-                15*60
+                jwtService.getAccessTokenExpirationSeconds()
         );
 
 

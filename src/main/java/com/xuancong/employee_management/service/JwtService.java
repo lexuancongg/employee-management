@@ -1,7 +1,9 @@
 package com.xuancong.employee_management.service;
 
-import com.xuancong.employee_management.exception.UnauthorizedException;
+import com.xuancong.employee_management.enums.TokenType;
 import com.xuancong.employee_management.model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,36 +25,34 @@ public class JwtService {
         return Keys.hmacShaKeyFor(SECRET.getBytes());
     }
 
-    public String generateAccessToken(User user) {
-        return Jwts.builder()
+    public String generateToken(User user, TokenType tokenType) {
+        long exp = (tokenType == TokenType.ACCESS)
+                ? ACCESS_TOKEN_EXP_MS
+                : REFRESH_TOKEN_EXP_MS;
+
+        JwtBuilder builder = Jwts.builder()
                 .subject(user.getId().toString())
-                .claim("type", "access")
+                .claim("type", tokenType.name().toLowerCase())
                 .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + ACCESS_TOKEN_EXP_MS))
-                .signWith(getSignKey())
-                .compact();
-    }
-    public String generateRefreshToken(User user) {
-        return Jwts.builder()
-                .subject(user.getId().toString())
-                .claim("type", "refresh")
-                .id(UUID.randomUUID().toString())
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_EXP_MS))
-                .signWith(getSignKey())
-                .compact();
+                .expiration(new Date(System.currentTimeMillis() + exp))
+                .signWith(getSignKey());
+
+        if (tokenType == TokenType.REFRESH) {
+            builder.id(UUID.randomUUID().toString());
+        }
+
+        return builder.compact();
     }
 
-    public String extractUserId(String token) {
+    public Claims parseClaims(String token) {
         return Jwts.parser()
                 .verifyWith((SecretKey) getSignKey())
                 .build()
                 .parseSignedClaims(token)
-                .getPayload()
-                .getSubject();
+                .getPayload();
     }
 
-    public boolean isValid(String token) {
+    public boolean verifyJwt(String token) {
         try {
             Jwts.parser()
                     .verifyWith((SecretKey) getSignKey())
@@ -69,30 +69,8 @@ public class JwtService {
         return ACCESS_TOKEN_EXP_MS / 1000;
     }
 
-    public String extractType(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith((SecretKey) getSignKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .get("type", String.class);
-        } catch (Exception e) {
-            throw new UnauthorizedException("Invalid token");
-        }
-    }
-    public String extractJti(String token) {
-        try {
-            return Jwts.parser()
-                    .verifyWith((SecretKey) getSignKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload()
-                    .getId(); // chính là jti
-        } catch (Exception e) {
-            throw new UnauthorizedException("Invalid token");
-        }
-    }
+
+
 
 
 
