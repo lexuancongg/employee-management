@@ -3,15 +3,18 @@ package com.xuancong.employee_management.service;
 import com.xuancong.employee_management.config.FilesystemConfig;
 import com.xuancong.employee_management.dto.image.ImageCreateRequest;
 import com.xuancong.employee_management.dto.image.ImageResponse;
+import com.xuancong.employee_management.dto.image.ImageStreamResponse;
 import com.xuancong.employee_management.model.Image;
 import com.xuancong.employee_management.repository.ImageRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -66,6 +69,35 @@ public class ImageService {
     private void checkIsExitedDirectory(File directory) {
         if(!directory.exists()) {
             directory.mkdirs();
+        }
+    }
+
+    public ImageStreamResponse getFile(Long id, String fileName) {
+
+
+        Image image = imageRepository.findById(id).orElse(null);
+        if (image == null || !fileName.equalsIgnoreCase(image.getFileName())) {
+            return null;
+        }
+        MediaType mediaType = MediaType.valueOf(image.getImageType());
+        InputStream streamFile = this.getStreamFile(image.getFilePath());
+
+        return ImageStreamResponse.builder()
+                .mediaType(mediaType)
+                .content(streamFile)
+                .build();
+
+    }
+    public InputStream getStreamFile(String filePath){
+        Path path = Paths.get(filePath);
+        if (!Files.exists(path)) {
+            throw new IllegalStateException("not found");
+        }
+
+        try {
+            return Files.newInputStream(path);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read file: " + filePath, e);
         }
     }
 
