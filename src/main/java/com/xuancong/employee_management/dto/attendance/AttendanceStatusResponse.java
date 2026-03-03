@@ -3,6 +3,7 @@ package com.xuancong.employee_management.dto.attendance;
 import com.xuancong.employee_management.enums.AttendanceStatus;
 import com.xuancong.employee_management.model.Attendance;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -13,7 +14,7 @@ public record AttendanceStatusResponse(
         LocalDateTime checkOut,
         AttendanceStatus status
 
-) {
+)  {
     public static AttendanceStatusResponse from(Attendance attendance ,Long employeeId,LocalDate workDate) {
         return new AttendanceStatusResponse(
                 employeeId,

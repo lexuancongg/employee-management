@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(name = "/api")
+@RequestMapping("/api")
 public class PositionController {
     private final PositionService positionService;
 

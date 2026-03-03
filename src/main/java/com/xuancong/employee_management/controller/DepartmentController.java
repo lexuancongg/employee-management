@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
-    @PostMapping("/departments")
+        @PostMapping("/departments")
     public ResponseEntity<DepartmentGetResponse> createDepartment(@Valid @RequestBody DepartmentCreateRequest departmentCreateRequest) {
         return ResponseEntity.ok(
                 this.departmentService.createDepartment(departmentCreateRequest)

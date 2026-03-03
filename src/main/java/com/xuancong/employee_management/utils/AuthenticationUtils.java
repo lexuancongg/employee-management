@@ -11,6 +11,7 @@ public class AuthenticationUtils {
         Authentication authentication = getAuthentication();
 
         if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+            System.out.println("không có token");
             throw new AccessDeniedException("Unauthenticated");
         }
 

@@ -40,6 +40,14 @@ public class AuthenticationService {
         String accessToken  = jwtService.generateToken(user,TokenType.ACCESS);
         String refreshToken = jwtService.generateToken(user,TokenType.REFRESH);
         long expiresIn = jwtService.getAccessTokenExpirationSeconds();
+        String jit = jwtService.parseClaims(refreshToken).getId();
+        refreshTokenRepository.save(
+                RefreshToken.builder()
+                        .refreshToken(refreshToken)
+                        .user(user)
+                        .id(jit)
+                        .build()
+        );
         return new AuthenticationResponse(accessToken, refreshToken, expiresIn);
 
     }

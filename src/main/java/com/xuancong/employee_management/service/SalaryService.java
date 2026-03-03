@@ -29,11 +29,11 @@ public class SalaryService {
         Employee employee = validateExitingEmployee(employeeId);
 
         boolean isFirst =
-                !salaryRepository.existsByEmployeeIdAndActiveTrue(employeeId);
+                !salaryRepository.existsByEmployee_IdAndActiveTrue(employeeId);
 
         if (!isFirst) {
             Salary activeSalary =
-                    salaryRepository.findByEmployeeIdAndActiveTrue(employeeId)
+                    salaryRepository.findByEmployee_IdAndActiveTrue(employeeId)
                             .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND));
 
             activeSalary.setActive(false);
@@ -45,7 +45,7 @@ public class SalaryService {
                 .baseSalary(req.baseSalary())
                 .effectiveDate(req.effectiveDate())
                 .employee(employee)
-                .isActive(true)
+                .active(true)
                 .build();
 
         salaryRepository.save(salary);
@@ -63,7 +63,7 @@ public class SalaryService {
         Long userId   = AuthenticationUtils.extractUserId();
         Employee employee = employeeRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND));
-        Salary salary = salaryRepository.findByEmployeeIdAndActiveTrue(employee.getId())
+        Salary salary = salaryRepository.findByEmployee_IdAndActiveTrue(employee.getId())
                 .orElse(new Salary());
         return SalaryResponse.fromSalary(salary);
     }

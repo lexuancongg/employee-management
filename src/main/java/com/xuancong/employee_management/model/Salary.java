@@ -25,7 +25,7 @@ public class Salary {
 
     private LocalDate endDate;
     private LocalDate effectiveDate;
-    private boolean isActive;
+    private boolean active;
     private String note;
 
 }

@@ -61,7 +61,7 @@ public class AttendanceService {
     }
 
 
-    private Employee getEmployeeCurrent(){
+    public Employee getEmployeeCurrent(){
         Long userId = AuthenticationUtils.extractUserId();
         return  employeeRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND,userId));
