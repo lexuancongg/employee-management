@@ -19,6 +19,7 @@ public class Constants {
         public static final String FORBIDDEN = "FORBIDDEN";
         public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
         public static final String PASSWORD_NOT_VALID = "PASSWORD_NOT_VALID";
+        public static final String REFRESH_TOKEN_INVALID = "REFRESH_TOKEN_INVALID";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";
