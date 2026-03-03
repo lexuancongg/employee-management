@@ -56,6 +56,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfiguration = new CorsConfiguration();
@@ -78,27 +79,27 @@ public class SecurityConfig {
 
 
 
-    @Bean
-    public UserDetailsService userDetailsService(){
-        return (username -> {
-            User user = this.userRepository.findByUsername(username)
-                    .orElseThrow(() -> new UsernameNotFoundException(username));
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getUsername())
-                    .password(user.getPassword())
-                    .roles("USER")
-                    .build();
-
-        });
-
-    }
-
-    @Bean
-    public DaoAuthenticationProvider daoAuthenticationProvider(){
-        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
-        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
-        return daoAuthenticationProvider;
-    }
+//    @Bean
+//    public UserDetailsService userDetailsService(){
+//        return (username -> {
+//            User user = this.userRepository.findByUsername(username)
+//                    .orElseThrow(() -> new UsernameNotFoundException(username));
+//            return org.springframework.security.core.userdetails.User.builder()
+//                    .username(user.getUsername())
+//                    .password(user.getPassword())
+//                    .roles("USER")
+//                    .build();
+//
+//        });
+//
+//    }
+//
+//    @Bean
+//    public DaoAuthenticationProvider daoAuthenticationProvider(){
+//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+//        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
+//        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
+//        return daoAuthenticationProvider;
+//    }
 
 }

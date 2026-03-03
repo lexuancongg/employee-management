@@ -60,8 +60,8 @@ public class SalaryService {
     }
 
     public SalaryResponse getCurrentSalary(){
-        String username  = AuthenticationUtils.extractUsername();
-        Employee employee = employeeRepository.findByUser_Username(username)
+        Long userId   = AuthenticationUtils.extractUserId();
+        Employee employee = employeeRepository.findByUser_Id(userId)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND));
         Salary salary = salaryRepository.findByEmployeeIdAndActiveTrue(employee.getId())
                 .orElse(new Salary());

@@ -3,6 +3,7 @@ package com.xuancong.employee_management.service;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.auth.AuthRequest;
 import com.xuancong.employee_management.dto.auth.AuthenticationResponse;
+import com.xuancong.employee_management.dto.auth.LogoutRequest;
 import com.xuancong.employee_management.dto.auth.RefreshRequest;
 import com.xuancong.employee_management.enums.TokenType;
 import com.xuancong.employee_management.exception.BadCredentialsException;
@@ -63,6 +64,7 @@ public class AuthenticationService {
         }
         RefreshToken refreshSaved = refreshTokenRepository.findById(jti)
                 .orElseThrow(()-> new UnauthorizedException("Refresh token revoked"));
+
         User user = refreshSaved.getUser();
         String newAccessToken = jwtService.generateToken(user, TokenType.ACCESS);
         String newRefreshToken = jwtService.generateToken(user,TokenType.REFRESH);
@@ -84,6 +86,15 @@ public class AuthenticationService {
                 jwtService.getAccessTokenExpirationSeconds()
         );
 
+
+    }
+
+
+    public void logout(LogoutRequest logoutRequest){
+        String refreshToken = logoutRequest.refreshToken();
+        RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
+                .orElseThrow(() -> new UnauthorizedException(Constants.ErrorKey.REFRESH_TOKEN_INVALID, refreshToken));
+        refreshTokenRepository.delete(token);
 
     }
 }

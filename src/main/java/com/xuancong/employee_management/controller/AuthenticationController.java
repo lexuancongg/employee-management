@@ -4,7 +4,9 @@ import com.xuancong.employee_management.dto.auth.*;
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.UserRepository;
 import com.xuancong.employee_management.service.AuthenticationService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -52,6 +54,14 @@ public class AuthenticationController {
     }
 
 
+
+    @PostMapping("/authentication/logout")
+    public ResponseEntity<Void> logout(
+            @RequestBody @Valid LogoutRequest logoutRequest
+    ){
+        authenticationService.logout(logoutRequest);
+        return ResponseEntity.noContent().build();
+    }
 
 
 }

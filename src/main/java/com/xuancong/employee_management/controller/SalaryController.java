@@ -1,7 +1,6 @@
 package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.dto.salary.SalaryCreateRequest;
-import com.xuancong.employee_management.dto.salary.SalaryGetResponse;
 import com.xuancong.employee_management.dto.salary.SalaryResponse;
 import com.xuancong.employee_management.service.SalaryService;
 import lombok.RequiredArgsConstructor;
