@@ -27,6 +27,11 @@ services:
     networks:
       - lexuancong-network
 
+  kafka:
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+
   redis:
     image: redis:7-alpine
     container_name: redis

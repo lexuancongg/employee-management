@@ -5,8 +5,10 @@ import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailGetResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
 import com.xuancong.employee_management.dto.employee.EmployeePagingGetResponse;
+import com.xuancong.employee_management.event.EmployeeCreatedEvent;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
+import com.xuancong.employee_management.kafka.message.Event;
 import com.xuancong.employee_management.model.Employee;
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.DepartmentRepository;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +44,9 @@ public class EmployeeService {
     private final UserRepository userRepository;
     private final MailService mailService;
     private final DepartmentRepository departmentRepository;
+    private final KafkaTemplate<String, Event<EmployeeCreatedEvent>> kafkaTemplate;
+
+
     public EmployeeGetResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
         this.validateEmployeeInfo(employeeCreateRequest,null);
         Employee employee = employeeCreateRequest.toBaseEmployee();
@@ -50,9 +56,17 @@ public class EmployeeService {
         // tạo user
         String rawPassword = this.genericAccount(employeeCreateRequest, employeeCode,employee);
         employeeRepository.save(employee);
-        this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
+//        this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
+        this.publishEmployeeCreatedEvent(employeeCreateRequest.email(),employeeCode,rawPassword);
         return EmployeeGetResponse.fromEmployee(employee);
 
+    }
+
+    private void publishEmployeeCreatedEvent(String email,String code,String rawPassword) {
+        Event<EmployeeCreatedEvent> event =
+                new Event<>("EMPLOYEE_CREATED",
+                        new EmployeeCreatedEvent(email, code, rawPassword));
+        kafkaTemplate.send("employee-created-topic", event);
     }
 
     private void setReferenceOrThrow(EmployeeCreateRequest employeeCreateRequest,Employee employee){

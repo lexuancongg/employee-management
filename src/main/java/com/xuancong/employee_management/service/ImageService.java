@@ -25,6 +25,7 @@ import java.nio.file.Paths;
 public class ImageService {
     private final ImageRepository imageRepository;
     private final FilesystemConfig filesystemConfig;
+    private final S3FileService s3FileService;
 
 
     public ImageResponse create(ImageCreateRequest imageCreateRequest) {
@@ -32,6 +33,8 @@ public class ImageService {
         try {
             // dữ liệu của file được  the hien duoi dang file
             String filePath = this.saveFileInFilesystem(image.getFileName() , imageCreateRequest.file().getBytes());
+            String filePathS3 =  s3FileService.uploadFile(image.getFileName(),imageCreateRequest.file().getBytes());
+            System.out.println(filePathS3);
             image.setFilePath(filePath);
             imageRepository.save(image);
 
