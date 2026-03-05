@@ -14,6 +14,7 @@ import com.xuancong.employee_management.repository.RefreshTokenRepository;
 import com.xuancong.employee_management.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,28 +29,39 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public AuthenticationResponse login(AuthRequest authRequest){
-        User user = userRepository.findByUsername(authRequest.getUsername())
-                .orElseThrow(()-> new BadCredentialsException(Constants.ErrorKey.USER_NOT_FOUND, authRequest.getUsername()));
 
-        boolean authenticated = passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
+        User user = userRepository.findByUsername(authRequest.getUsername())
+                .orElseThrow(() ->
+                        new BadCredentialsException(Constants.ErrorKey.USER_NOT_FOUND));
+
+        boolean authenticated =
+                passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
+
         if(!authenticated){
-            throw new BadCredentialsException(
-                    Constants.ErrorKey.PASSWORD_NOT_VALID, authRequest.getPassword()
-            );
+            throw new BadCredentialsException(Constants.ErrorKey.PASSWORD_NOT_VALID);
         }
-        String accessToken  = jwtService.generateToken(user,TokenType.ACCESS);
-        String refreshToken = jwtService.generateToken(user,TokenType.REFRESH);
+
+        String accessToken  = jwtService.generateToken(user, TokenType.ACCESS);
+        String refreshToken = jwtService.generateToken(user, TokenType.REFRESH);
+
         long expiresIn = jwtService.getAccessTokenExpirationSeconds();
+
         String jit = jwtService.parseClaims(refreshToken).getId();
+
         refreshTokenRepository.save(
                 RefreshToken.builder()
+                        .id(jit)
                         .refreshToken(refreshToken)
                         .user(user)
-                        .id(jit)
                         .build()
         );
-        return new AuthenticationResponse(accessToken, refreshToken, expiresIn);
 
+        return new AuthenticationResponse(
+                accessToken,
+                refreshToken,
+                expiresIn,
+                "role"
+        );
     }
 
 
@@ -91,7 +103,8 @@ public class AuthenticationService {
         return  new AuthenticationResponse(
                 newAccessToken,
                 newRefreshToken,
-                jwtService.getAccessTokenExpirationSeconds()
+                jwtService.getAccessTokenExpirationSeconds(),
+                "role"
         );
 
 

@@ -4,6 +4,7 @@ import com.xuancong.employee_management.service.JwtService;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -34,19 +35,23 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             FilterChain filterChain)
             throws ServletException, IOException {
 
-        String header = request.getHeader("Authorization");
+        Cookie[] cookies = request.getCookies();
+        String token = null;
 
-        if (header == null || !header.startsWith("Bearer ")) {
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    token = cookie.getValue();
+                }
+            }
+        }
+
+        if (token == null || !jwtService.verifyJwt(token)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        String token = header.substring(7);
 
-        if (!jwtService.verifyJwt(token)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
 
         Claims claims = jwtService.parseClaims(token);
 

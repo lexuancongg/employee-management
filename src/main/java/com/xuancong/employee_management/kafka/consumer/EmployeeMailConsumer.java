@@ -13,9 +13,10 @@ public class EmployeeMailConsumer {
 
     private final MailService mailService;
 
-    @KafkaListener(topics = "employee-created-topic", groupId = "employee-group")
+    @KafkaListener(topics = "employee-created-topic", groupId = "employee-group",
+    containerFactory = "listenerContainerFactory")
     public void handleEmployeeCreated(Event<EmployeeCreatedEvent> event) {
-
+        System.out.println("kafka thành công");
         mailService.sendAccountEmail(
                 event.getData().email(),
                 event.getData().employeeCode(),

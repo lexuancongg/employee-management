@@ -6,7 +6,8 @@ import com.xuancong.employee_management.repository.UserRepository;
 import com.xuancong.employee_management.service.AuthenticationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -35,13 +36,32 @@ public class AuthenticationController {
     }
 
 
-    @GetMapping("/authentication/login")
+    @PostMapping("/authentication/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthRequest authRequest
-            ){
-        return ResponseEntity.ok(
-                authenticationService.login(authRequest)
-        );
+    ) {
+
+        AuthenticationResponse authResponse =
+                authenticationService.login(authRequest);
+
+        ResponseCookie accessCookie = ResponseCookie.from("accessToken", authResponse.accessToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(authResponse.expiresIn())
+                .build();
+
+        ResponseCookie refreshCookie = ResponseCookie.from("refreshToken", authResponse.refreshToken())
+                .httpOnly(true)
+                .secure(false)
+                .path("/")
+                .maxAge(7 * 24 * 3600)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
+                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
+                .body(authResponse);
     }
 
     @PostMapping("/authentication/refresh")

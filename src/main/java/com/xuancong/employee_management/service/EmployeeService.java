@@ -56,7 +56,7 @@ public class EmployeeService {
         // tạo user
         String rawPassword = this.genericAccount(employeeCreateRequest, employeeCode,employee);
         employeeRepository.save(employee);
-//        this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
+        this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
         this.publishEmployeeCreatedEvent(employeeCreateRequest.email(),employeeCode,rawPassword);
         return EmployeeGetResponse.fromEmployee(employee);
 
