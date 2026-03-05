@@ -37,7 +37,7 @@ public class AuthenticationController {
 
 
     @PostMapping("/authentication/login")
-    public ResponseEntity<AuthenticationResponse> login(
+    public ResponseEntity<LoginResponse> login(
             @RequestBody AuthRequest authRequest
     ) {
 
@@ -61,7 +61,12 @@ public class AuthenticationController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
                 .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                .body(authResponse);
+                .body(
+                        new LoginResponse(
+                                authResponse.role(),
+                                authResponse.expiresIn()
+                        )
+                );
     }
 
     @PostMapping("/authentication/refresh")

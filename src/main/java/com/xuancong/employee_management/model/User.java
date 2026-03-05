@@ -3,6 +3,8 @@ package com.xuancong.employee_management.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -20,6 +22,10 @@ public class User extends BaseAuditEntity {
     private boolean enabled;
     private String email;
     private String phone;
+
+    @OneToMany(mappedBy = "user")
+    private Set<UserRole> userRoles;
+
 
 
 }

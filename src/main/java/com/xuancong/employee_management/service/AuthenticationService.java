@@ -14,7 +14,6 @@ import com.xuancong.employee_management.repository.RefreshTokenRepository;
 import com.xuancong.employee_management.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +28,8 @@ public class AuthenticationService {
     private final RefreshTokenRepository refreshTokenRepository;
 
     public AuthenticationResponse login(AuthRequest authRequest){
+        System.out.println(authRequest.getUsername());
+        System.out.println(authRequest.getPassword());
 
         User user = userRepository.findByUsername(authRequest.getUsername())
                 .orElseThrow(() ->

@@ -1,14 +1,14 @@
-import { AuthenticationResponse } from "@/models/auth/authenticationResponse";
+import { LoginResponse } from "@/models/auth/loginResponse";
 import { AuthRequest } from "@/models/auth/authRequest";
 import apiClient from "@/utils/api/apiClient";
 
 class AuthenticationService{
     private baseUrl:string
     constructor() {
-        this.baseUrl = "http://localhost:8080/api/authetication"
+        this.baseUrl = "http://localhost:8080/api/authentication"
     }
 
-    public async login(authRequest : AuthRequest):Promise<AuthenticationResponse>{
+    public async login(authRequest : AuthRequest):Promise<LoginResponse>{
         const response = await apiClient.post(`${this.baseUrl}/login`,JSON.stringify(authRequest));
         if(response.ok){
             return await response.json();
