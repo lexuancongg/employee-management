@@ -12,5 +12,17 @@ public record AddressResponse(
         String districtName,
         String specificAddress
 ) {
+    public static AddressResponse fromAddress(Address address) {
+        return new AddressResponse(
+                address.getId(),
+                address.getCountry().getId(),
+                address.getCountry().getName(),
+                address.getProvince().getId(),
+                address.getProvince().getName(),
+                address.getDistrict().getId(),
+                address.getDistrict().getName(),
+                address.getSpecificAddress()
+        );
+    }
 
 }

@@ -10,7 +10,13 @@ public record BranchResponse(
 
 ) {
 
-    public Branch toBranch() {
+   public static BranchResponse fromBranch(Branch branch) {
+       AddressResponse address = AddressResponse.fromAddress(branch.getAddress());
+       return new BranchResponse(
+               branch.getId(),
+               branch.getName(),
+               address
+       );
 
-    }
+   }
 }

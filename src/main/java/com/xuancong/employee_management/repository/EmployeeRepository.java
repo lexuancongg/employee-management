@@ -1,5 +1,6 @@
 package com.xuancong.employee_management.repository;
 
+import com.xuancong.employee_management.model.Branch;
 import com.xuancong.employee_management.model.Employee;
 import com.xuancong.employee_management.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -27,4 +28,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> , JpaS
     String user(User user);
 
     Optional<Employee> findByUser_Id(Long userId);
+
+    boolean existsByBranch(Branch branch);
 }
