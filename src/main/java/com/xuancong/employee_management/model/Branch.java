@@ -10,12 +10,16 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class branch extends BaseAuditEntity {
+public class Branch extends BaseAuditEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
 
+
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 
 
 }

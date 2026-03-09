@@ -1,10 +1,10 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
-import com.xuancong.employee_management.dto.employee.EmployeePagingResponse;
 import com.xuancong.employee_management.event.EmployeeCreatedEvent;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
@@ -161,8 +161,8 @@ public class EmployeeService {
 
     }
 
-    public EmployeePagingResponse getEmployees(String name, String code, String email, Long departmentId,
-                                               int page, int size, String sort){
+    public PageResponse<EmployeeResponse> getEmployees(String name, String code, String email, Long departmentId,
+                                     int page, int size, String sort){
 
 
 
@@ -175,7 +175,7 @@ public class EmployeeService {
                 .map(EmployeeResponse::fromEmployee)
                 .toList();
 
-        return  new EmployeePagingResponse(
+        return  new PageResponse<EmployeeResponse>(
                 content,
                 (int) employeePage.getTotalElements(),
                 employeePage.getTotalPages(),

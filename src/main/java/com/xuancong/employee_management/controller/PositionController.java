@@ -1,9 +1,9 @@
 package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.position.PositionCreateRequest;
 import com.xuancong.employee_management.dto.position.PositionResponse;
-import com.xuancong.employee_management.dto.position.PositionPagingResponse;
 import com.xuancong.employee_management.service.PositionService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ public class PositionController {
     }
 
     @GetMapping("/positions")
-    public ResponseEntity<PositionPagingResponse> getPositions(
+    public ResponseEntity<PageResponse<PositionResponse>> getPositions(
             @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,
             @RequestParam(name = "pageSize", defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false) int pageSize,
             @RequestParam(name = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false) int pageIndex

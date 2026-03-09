@@ -1,9 +1,9 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.position.PositionCreateRequest;
 import com.xuancong.employee_management.dto.position.PositionResponse;
-import com.xuancong.employee_management.dto.position.PositionPagingResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
@@ -44,14 +44,14 @@ public class PositionService {
         return positionRepository.existsByNameIgnoreCaseAndIdNot(name,id);
     }
 
-    public PositionPagingResponse getPositions(int pageIndex, int pageSize, String keyword){
+    public PageResponse<PositionResponse> getPositions(int pageIndex, int pageSize, String keyword){
         Pageable pageable = PageRequest.of(pageIndex,pageSize);
         Page<Position> positionPage = positionRepository.findAllByNameContainingIgnoreCase(keyword,pageable);
         List<PositionResponse> content = positionPage.getContent().stream()
                 .map(PositionResponse::fromPosition)
                 .toList();
 
-        return new PositionPagingResponse(
+        return new PageResponse<PositionResponse>(
                 content,
                 (int) positionPage.getTotalElements(),
                 positionPage.getTotalPages(),

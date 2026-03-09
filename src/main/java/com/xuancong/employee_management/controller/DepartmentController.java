@@ -1,9 +1,9 @@
 package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.department.DepartmentCreateRequest;
 import com.xuancong.employee_management.dto.department.DepartmentResponse;
-import com.xuancong.employee_management.dto.department.DepartmentPagingResponse;
 import com.xuancong.employee_management.service.DepartmentService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class DepartmentController {
     }
 
     @GetMapping("/departments")
-    public ResponseEntity<DepartmentPagingResponse> getDepartments(
+    public ResponseEntity<PageResponse<DepartmentResponse>> getDepartments(
             @RequestParam(name = "pageIndex",required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
             @RequestParam(name = "pageSize", required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
             @RequestParam(name = "name",required = false,defaultValue = "") String name

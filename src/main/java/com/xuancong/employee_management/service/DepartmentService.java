@@ -1,9 +1,9 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.department.DepartmentCreateRequest;
 import com.xuancong.employee_management.dto.department.DepartmentResponse;
-import com.xuancong.employee_management.dto.department.DepartmentPagingResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
@@ -75,12 +75,12 @@ public class DepartmentService {
             value = "departments",
             key = "#page + ':' + #size + ':' + #name"
     )
-    public DepartmentPagingResponse getDepartments(int page, int size, String name) {
+    public PageResponse<DepartmentResponse> getDepartments(int page, int size, String name) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Department> departmentPage = departmentRepository.findByNameContainingIgnoreCase(name, pageable);
         List<DepartmentResponse> content = departmentPage.getContent().stream().map(DepartmentResponse::fromDepartment)
                 .toList();
-        return new DepartmentPagingResponse(
+        return new PageResponse<DepartmentResponse>(
                 content,
                 (int) departmentPage.getTotalElements(),
                 departmentPage.getTotalPages(),

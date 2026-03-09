@@ -43,4 +43,8 @@ public class Employee extends BaseAuditEntity {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
+    @ManyToOne
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
+
 }

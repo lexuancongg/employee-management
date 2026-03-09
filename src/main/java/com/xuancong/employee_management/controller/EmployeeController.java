@@ -1,6 +1,7 @@
 package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
@@ -45,7 +46,7 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees")
-    public ResponseEntity<EmployeePagingResponse> getEmployees(
+    public ResponseEntity<PageResponse<EmployeeResponse>> getEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String email,

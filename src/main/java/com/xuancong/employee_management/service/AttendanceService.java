@@ -2,8 +2,8 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.attendance.AttendanceResponse;
-import com.xuancong.employee_management.dto.attendance.AttendancePagingResponse;
 import com.xuancong.employee_management.dto.attendance.AttendanceStatusResponse;
+import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.exception.AccessDeniedException;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
@@ -111,7 +111,7 @@ public class AttendanceService {
 
 
     @PreAuthorize("hasRole('ADMIN') or #employeeId == null")
-    public AttendancePagingResponse getAttendances(LocalDate from, LocalDate to, int page, int size, Long employeeId){
+    public PageResponse<AttendanceResponse> getAttendances(LocalDate from, LocalDate to, int page, int size, Long employeeId){
         Pageable pageable = PageRequest.of(page,size);
         Page<Attendance> attendancePage;
         if(employeeId == null){
@@ -129,7 +129,7 @@ public class AttendanceService {
         List<AttendanceResponse> content = attendancePage.getContent().stream()
                 .map(AttendanceResponse::fromAttendance)
                 .toList();
-        return  new AttendancePagingResponse(
+        return  new PageResponse<AttendanceResponse>(
                 content,
                 (int) attendancePage.getTotalElements(),
                 attendancePage.getTotalPages(),
