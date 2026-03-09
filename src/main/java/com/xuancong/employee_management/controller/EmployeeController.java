@@ -2,9 +2,9 @@ package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
-import com.xuancong.employee_management.dto.employee.EmployeeDetailGetResponse;
-import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
-import com.xuancong.employee_management.dto.employee.EmployeePagingGetResponse;
+import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
+import com.xuancong.employee_management.dto.employee.EmployeeResponse;
+import com.xuancong.employee_management.dto.employee.EmployeePagingResponse;
 import com.xuancong.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -19,7 +19,7 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @PostMapping("/employees")
-    public ResponseEntity<EmployeeGetResponse> createEmployee(
+    public ResponseEntity<EmployeeResponse> createEmployee(
             @Valid @RequestBody EmployeeCreateRequest employeeCreateRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.employeeService.createEmployee(employeeCreateRequest));
@@ -38,14 +38,14 @@ public class EmployeeController {
 
 
     @GetMapping("/employees/{id}")
-    public ResponseEntity<EmployeeDetailGetResponse> getEmployee(@PathVariable Long id) {
+    public ResponseEntity<EmployeeDetailResponse> getEmployee(@PathVariable Long id) {
         return ResponseEntity.ok(
                 this.employeeService.getEmployee(id)
         );
     }
 
     @GetMapping("/employees")
-    public ResponseEntity<EmployeePagingGetResponse> getEmployees(
+    public ResponseEntity<EmployeePagingResponse> getEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String email,

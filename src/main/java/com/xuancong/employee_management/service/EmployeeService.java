@@ -2,9 +2,9 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
-import com.xuancong.employee_management.dto.employee.EmployeeDetailGetResponse;
-import com.xuancong.employee_management.dto.employee.EmployeeGetResponse;
-import com.xuancong.employee_management.dto.employee.EmployeePagingGetResponse;
+import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
+import com.xuancong.employee_management.dto.employee.EmployeeResponse;
+import com.xuancong.employee_management.dto.employee.EmployeePagingResponse;
 import com.xuancong.employee_management.event.EmployeeCreatedEvent;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
@@ -28,7 +28,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import javax.lang.model.element.NestingKind;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -47,7 +46,7 @@ public class EmployeeService {
     private final KafkaTemplate<String, Event<EmployeeCreatedEvent>> kafkaTemplate;
 
 
-    public EmployeeGetResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
+    public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
         this.validateEmployeeInfo(employeeCreateRequest,null);
         Employee employee = employeeCreateRequest.toBaseEmployee();
         String employeeCode = this.generateEmployeeCode();
@@ -58,7 +57,7 @@ public class EmployeeService {
         employeeRepository.save(employee);
         this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
         this.publishEmployeeCreatedEvent(employeeCreateRequest.email(),employeeCode,rawPassword);
-        return EmployeeGetResponse.fromEmployee(employee);
+        return EmployeeResponse.fromEmployee(employee);
 
     }
 
@@ -154,16 +153,16 @@ public class EmployeeService {
 
     }
 
-    public EmployeeDetailGetResponse getEmployee(Long id){
+    public EmployeeDetailResponse getEmployee(Long id){
         Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
         Long avatarId = employee.getAvatarId();
         // lấy url ,
-        return  EmployeeDetailGetResponse.from(employee);
+        return  EmployeeDetailResponse.from(employee);
 
     }
 
-    public EmployeePagingGetResponse getEmployees(String name,String code,String email,Long departmentId,
-                                                  int page,int size,String sort){
+    public EmployeePagingResponse getEmployees(String name, String code, String email, Long departmentId,
+                                               int page, int size, String sort){
 
 
 
@@ -172,11 +171,11 @@ public class EmployeeService {
         Sort sortEmployee = Sort.by(Sort.Direction.DESC, Constants.Column.ID);
         Page<Employee> employeePage = this.employeeRepository.findAll(specification,pageable);
         List<Employee> employees = employeePage.getContent();
-        List<EmployeeGetResponse>  content = employees.stream()
-                .map(EmployeeGetResponse::fromEmployee)
+        List<EmployeeResponse>  content = employees.stream()
+                .map(EmployeeResponse::fromEmployee)
                 .toList();
 
-        return  new EmployeePagingGetResponse(
+        return  new EmployeePagingResponse(
                 content,
                 (int) employeePage.getTotalElements(),
                 employeePage.getTotalPages(),

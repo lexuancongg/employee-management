@@ -5,7 +5,7 @@ import com.xuancong.employee_management.model.Employee;
 
 import java.time.LocalDate;
 
-public record EmployeeGetResponse(
+public record EmployeeResponse(
         Long id,
         String employeeCode,
         String name,
@@ -15,8 +15,8 @@ public record EmployeeGetResponse(
         EmployeeStatus status,
         LocalDate hireDate
 ) {
-    public static  EmployeeGetResponse fromEmployee(Employee employee) {
-        return new EmployeeGetResponse(
+    public static EmployeeResponse fromEmployee(Employee employee) {
+        return new EmployeeResponse(
                 employee.getId(),
                 employee.getEmployeeCode(),
                 employee.getName(),

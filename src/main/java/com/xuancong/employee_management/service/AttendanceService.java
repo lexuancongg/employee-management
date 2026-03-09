@@ -1,8 +1,8 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
-import com.xuancong.employee_management.dto.attendance.AttendanceGetResponse;
-import com.xuancong.employee_management.dto.attendance.AttendancePagingGetResponse;
+import com.xuancong.employee_management.dto.attendance.AttendanceResponse;
+import com.xuancong.employee_management.dto.attendance.AttendancePagingResponse;
 import com.xuancong.employee_management.dto.attendance.AttendanceStatusResponse;
 import com.xuancong.employee_management.exception.AccessDeniedException;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
@@ -35,7 +35,7 @@ public class AttendanceService {
     private final EmployeeRepository employeeRepository;
 
 
-    public AttendanceGetResponse checkIn(){
+    public AttendanceResponse checkIn(){
         Employee employee = this.getEmployeeCurrent();
         LocalDate workDate = LocalDate.now();
         LocalDateTime timeCheckIn = LocalDateTime.now();
@@ -46,7 +46,7 @@ public class AttendanceService {
                 .workDate(workDate)
                 .build();
         attendanceRepository.save(attendance);
-        return AttendanceGetResponse.fromAttendance(attendance);
+        return AttendanceResponse.fromAttendance(attendance);
     }
 
     private void validateDuplicateCheckIn(Employee employee , LocalDate workDate){
@@ -111,7 +111,7 @@ public class AttendanceService {
 
 
     @PreAuthorize("hasRole('ADMIN') or #employeeId == null")
-    public AttendancePagingGetResponse getAttendances(LocalDate from, LocalDate to, int page,int size,Long employeeId){
+    public AttendancePagingResponse getAttendances(LocalDate from, LocalDate to, int page, int size, Long employeeId){
         Pageable pageable = PageRequest.of(page,size);
         Page<Attendance> attendancePage;
         if(employeeId == null){
@@ -126,10 +126,10 @@ public class AttendanceService {
                         employeeId, from, to, pageable
                 );
 
-        List<AttendanceGetResponse> content = attendancePage.getContent().stream()
-                .map(AttendanceGetResponse::fromAttendance)
+        List<AttendanceResponse> content = attendancePage.getContent().stream()
+                .map(AttendanceResponse::fromAttendance)
                 .toList();
-        return  new AttendancePagingGetResponse(
+        return  new AttendancePagingResponse(
                 content,
                 (int) attendancePage.getTotalElements(),
                 attendancePage.getTotalPages(),

@@ -1,4 +1,4 @@
-package com.xuancong.employee_management.config;
+package com.xuancong.employee_management.config.audit;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.domain.AuditorAware;

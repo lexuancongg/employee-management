@@ -1,6 +1,6 @@
 package com.xuancong.employee_management.service;
 
-import com.xuancong.employee_management.config.FilesystemConfig;
+import com.xuancong.employee_management.config.fileSystem.FilesystemConfig;
 import com.xuancong.employee_management.dto.image.ImageCreateRequest;
 import com.xuancong.employee_management.dto.image.ImageResponse;
 import com.xuancong.employee_management.dto.image.ImageStreamResponse;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
 
 import java.io.File;
 import java.io.IOException;

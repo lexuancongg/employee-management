@@ -1,5 +1,6 @@
 package com.xuancong.employee_management.kafka.message;
 
+import jakarta.persistence.EntityManager;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,3 +16,4 @@ public class Event<T> {
         this.data = data;
     }
 }
+EntityManager

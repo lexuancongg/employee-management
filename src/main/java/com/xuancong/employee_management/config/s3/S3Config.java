@@ -1,4 +1,4 @@
-package com.xuancong.employee_management.config;
+package com.xuancong.employee_management.config.s3;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

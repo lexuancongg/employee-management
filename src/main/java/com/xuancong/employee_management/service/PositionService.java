@@ -2,8 +2,8 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.position.PositionCreateRequest;
-import com.xuancong.employee_management.dto.position.PositionGetResponse;
-import com.xuancong.employee_management.dto.position.PositionPagingGetResponse;
+import com.xuancong.employee_management.dto.position.PositionResponse;
+import com.xuancong.employee_management.dto.position.PositionPagingResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,11 +27,11 @@ public class PositionService {
 
     private final EmployeeRepository employeeRepository;
 
-    public PositionGetResponse createPosition(PositionCreateRequest positionCreateRequest) {
+    public PositionResponse createPosition(PositionCreateRequest positionCreateRequest) {
         this.validatePositionName(null,positionCreateRequest.name());
         Position position = positionCreateRequest.toPosition();
         this.positionRepository.save(position);
-        return  PositionGetResponse.fromPosition(position);
+        return  PositionResponse.fromPosition(position);
 
     }
 
@@ -45,14 +44,14 @@ public class PositionService {
         return positionRepository.existsByNameIgnoreCaseAndIdNot(name,id);
     }
 
-    public PositionPagingGetResponse getPositions(int pageIndex,int pageSize,String keyword){
+    public PositionPagingResponse getPositions(int pageIndex, int pageSize, String keyword){
         Pageable pageable = PageRequest.of(pageIndex,pageSize);
         Page<Position> positionPage = positionRepository.findAllByNameContainingIgnoreCase(keyword,pageable);
-        List<PositionGetResponse> content = positionPage.getContent().stream()
-                .map(PositionGetResponse::fromPosition)
+        List<PositionResponse> content = positionPage.getContent().stream()
+                .map(PositionResponse::fromPosition)
                 .toList();
 
-        return new PositionPagingGetResponse(
+        return new PositionPagingResponse(
                 content,
                 (int) positionPage.getTotalElements(),
                 positionPage.getTotalPages(),
@@ -61,10 +60,10 @@ public class PositionService {
     }
 
 
-    public PositionGetResponse getPositionById(Long id){
+    public PositionResponse getPositionById(Long id){
         Position position = positionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.POSITION_NOT_FOUND,id));
-        return PositionGetResponse.fromPosition(position);
+        return PositionResponse.fromPosition(position);
     }
 
 

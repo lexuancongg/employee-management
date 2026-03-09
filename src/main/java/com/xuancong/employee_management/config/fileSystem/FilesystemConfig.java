@@ -1,4 +1,4 @@
-package com.xuancong.employee_management.config;
+package com.xuancong.employee_management.config.fileSystem;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Value;

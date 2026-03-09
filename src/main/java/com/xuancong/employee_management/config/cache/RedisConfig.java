@@ -1,4 +1,4 @@
-package com.xuancong.employee_management.config;
+package com.xuancong.employee_management.config.cache;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;

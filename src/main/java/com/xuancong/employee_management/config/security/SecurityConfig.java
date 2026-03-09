@@ -1,18 +1,11 @@
-package com.xuancong.employee_management.config;
+package com.xuancong.employee_management.config.security;
 
-import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.UserRepository;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -29,7 +22,7 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(UserRepository userRepository,JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig(UserRepository userRepository, JwtAuthFilter jwtAuthFilter) {
 
         this.userRepository = userRepository;
         this.jwtAuthFilter = jwtAuthFilter;
@@ -73,36 +66,4 @@ public class SecurityConfig {
 
         return new CorsFilter(source);
     }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception{
-//        return config.getAuthenticationManager();
-//    }
-
-
-
-
-//    @Bean
-//    public UserDetailsService userDetailsService(){
-//        return (username -> {
-//            User user = this.userRepository.findByUsername(username)
-//                    .orElseThrow(() -> new UsernameNotFoundException(username));
-//            return org.springframework.security.core.userdetails.User.builder()
-//                    .username(user.getUsername())
-//                    .password(user.getPassword())
-//                    .roles("USER")
-//                    .build();
-//
-//        });
-//
-//    }
-//
-//    @Bean
-//    public DaoAuthenticationProvider daoAuthenticationProvider(){
-//        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
-//        daoAuthenticationProvider.setUserDetailsService(this.userDetailsService());
-//        daoAuthenticationProvider.setPasswordEncoder(this.passwordEncoder());
-//        return daoAuthenticationProvider;
-//    }
-
 }

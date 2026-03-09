@@ -1,14 +1,14 @@
 package com.xuancong.employee_management.dto.employee;
 
-import com.xuancong.employee_management.dto.department.DepartmentGetResponse;
+import com.xuancong.employee_management.dto.department.DepartmentResponse;
 import com.xuancong.employee_management.dto.image.ImageGetResponse;
-import com.xuancong.employee_management.dto.position.PositionGetResponse;
+import com.xuancong.employee_management.dto.position.PositionResponse;
 import com.xuancong.employee_management.enums.EmployeeStatus;
 import com.xuancong.employee_management.model.Employee;
 
 import java.time.LocalDate;
 
-public record EmployeeDetailGetResponse(
+public record EmployeeDetailResponse(
         Long id,
         String name,
         String gender,
@@ -17,15 +17,15 @@ public record EmployeeDetailGetResponse(
         LocalDate birthday,
         LocalDate  hireDate,
         EmployeeStatus status,
-        PositionGetResponse position,
-        DepartmentGetResponse department,
+        PositionResponse position,
+        DepartmentResponse department,
         ImageGetResponse avatar
 
 ) {
-    public static EmployeeDetailGetResponse from(Employee employee) {
-        PositionGetResponse position = PositionGetResponse.fromPosition(employee.getPosition());
-        DepartmentGetResponse department = DepartmentGetResponse.fromDepartment(employee.getDepartment());
-        return new EmployeeDetailGetResponse(
+    public static EmployeeDetailResponse from(Employee employee) {
+        PositionResponse position = PositionResponse.fromPosition(employee.getPosition());
+        DepartmentResponse department = DepartmentResponse.fromDepartment(employee.getDepartment());
+        return new EmployeeDetailResponse(
                 employee.getId(),
                 employee.getName(),
                 employee.getGender(),

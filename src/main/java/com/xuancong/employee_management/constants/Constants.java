@@ -2,6 +2,7 @@ package com.xuancong.employee_management.constants;
 
 public class Constants {
     public class ErrorKey {
+        public static final String NAME_DUPLICATE = "NAME_DUPLICATE";
         public static final String POSITION_NAME_EXITED = "POSITION_NAME_EXITED";
         public static final String POSITION_NOT_FOUND = "POSITION_NOT_FOUND";
         public static final String POSITION_IN_USE = "POSITION_IN_USE";
@@ -20,6 +21,7 @@ public class Constants {
         public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
         public static final String PASSWORD_NOT_VALID = "PASSWORD_NOT_VALID";
         public static final String REFRESH_TOKEN_INVALID = "REFRESH_TOKEN_INVALID";
+        public static final String ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";

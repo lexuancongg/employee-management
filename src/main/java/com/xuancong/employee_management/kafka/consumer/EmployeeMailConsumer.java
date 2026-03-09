@@ -3,6 +3,7 @@ package com.xuancong.employee_management.kafka.consumer;
 import com.xuancong.employee_management.event.EmployeeCreatedEvent;
 import com.xuancong.employee_management.kafka.message.Event;
 import com.xuancong.employee_management.service.MailService;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
@@ -24,3 +25,4 @@ public class EmployeeMailConsumer {
         );
     }
 }
+

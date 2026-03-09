@@ -2,8 +2,8 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.department.DepartmentCreateRequest;
-import com.xuancong.employee_management.dto.department.DepartmentGetResponse;
-import com.xuancong.employee_management.dto.department.DepartmentPagingGetResponse;
+import com.xuancong.employee_management.dto.department.DepartmentResponse;
+import com.xuancong.employee_management.dto.department.DepartmentPagingResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
@@ -11,7 +11,6 @@ import com.xuancong.employee_management.model.Department;
 import com.xuancong.employee_management.repository.DepartmentRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -22,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -32,11 +30,11 @@ public class DepartmentService {
     private final EmployeeRepository employeeRepository;
 
     @CacheEvict(value = "departments", allEntries = true)
-    public DepartmentGetResponse createDepartment(DepartmentCreateRequest departmentCreateRequest){
+    public DepartmentResponse createDepartment(DepartmentCreateRequest departmentCreateRequest){
         this.validateDepartmentName(departmentCreateRequest.name(),null);
         Department department = departmentCreateRequest.toDepartment();
         this.departmentRepository.save(department);
-        return  DepartmentGetResponse.fromDepartment(department);
+        return  DepartmentResponse.fromDepartment(department);
 
     }
     private void validateDepartmentName(String name,Long id){
@@ -77,12 +75,12 @@ public class DepartmentService {
             value = "departments",
             key = "#page + ':' + #size + ':' + #name"
     )
-    public DepartmentPagingGetResponse getDepartments(int page,int size,String name) {
+    public DepartmentPagingResponse getDepartments(int page, int size, String name) {
         Pageable pageable = PageRequest.of(page, size);
         Page<Department> departmentPage = departmentRepository.findByNameContainingIgnoreCase(name, pageable);
-        List<DepartmentGetResponse> content = departmentPage.getContent().stream().map(DepartmentGetResponse::fromDepartment)
+        List<DepartmentResponse> content = departmentPage.getContent().stream().map(DepartmentResponse::fromDepartment)
                 .toList();
-        return new DepartmentPagingGetResponse(
+        return new DepartmentPagingResponse(
                 content,
                 (int) departmentPage.getTotalElements(),
                 departmentPage.getTotalPages(),
