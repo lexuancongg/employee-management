@@ -39,7 +39,7 @@ public class DepartmentService {
     }
     private void validateDepartmentName(String name,Long id){
         if(this.checkExistedDepartmentName(name,id)){
-            throw new DuplicateResourceException(Constants.ErrorKey.DEPARTMENT_DUPLICATE, name);
+            throw new DuplicateResourceException(Constants.ErrorKey.NAME_DUPLICATE, name);
         }
     }
     private boolean  checkExistedDepartmentName(String name,Long id){
@@ -48,7 +48,7 @@ public class DepartmentService {
     
         public void updateDepartment(Long id, DepartmentCreateRequest departmentCreateRequest){
              Department department =
-                     this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
+                     this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOT_FOUND);
             this.validateDepartmentName(departmentCreateRequest.name(),id);
             department.setName(departmentCreateRequest.name());
             this.departmentRepository.save(department);
@@ -63,9 +63,9 @@ public class DepartmentService {
 
     @CacheEvict(value = "departments", allEntries = true)
     public void delete(Long id){
-        Department department = this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOTFOUND);
+        Department department = this.validateExitedDepartment(id,departmentRepository,Constants.ErrorKey.DEPARTMENT_NOT_FOUND);
         if(employeeRepository.existsByDepartment_Id(department.getId())){
-            throw new ResourceInUseException(Constants.ErrorKey.DEPARTMENT_CONSTRAINT, department.getId());
+            throw new ResourceInUseException(Constants.ErrorKey.DEPARTMENT_HAS_EMPLOYEES, department.getId());
         }
         this.departmentRepository.delete(department);
 

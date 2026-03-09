@@ -51,7 +51,7 @@ public class AttendanceService {
 
     private void validateDuplicateCheckIn(Employee employee , LocalDate workDate){
         if(this.checkExitedAttendance(employee,workDate)){
-            throw new DuplicateResourceException(Constants.ErrorKey.CHECKIN_DUPLICATE,workDate);
+            throw new DuplicateResourceException(Constants.ErrorKey.CHECKIN_ALREADY_EXISTS,workDate);
         }
     }
 
@@ -81,7 +81,7 @@ public class AttendanceService {
 
         Attendance attendance = this.getAttendanceOrThrow(employee, workDate);
         if(attendance.getCheckOut()!=null){
-            throw new DuplicateResourceException(Constants.ErrorKey.CHECKOUT_DUPLICATE, workDate);
+            throw new DuplicateResourceException(Constants.ErrorKey.CHECKOUT_ALREADY_EXISTS, workDate);
         }
         attendance.setCheckOut(timeCheckOut);
         attendanceRepository.save(attendance);

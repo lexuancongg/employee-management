@@ -37,7 +37,7 @@ public class PositionService {
 
     private void validatePositionName(Long id,String name){
         if(this.checkExistedPositionName(id,name)){
-            throw new DuplicateResourceException(Constants.ErrorKey.POSITION_NAME_EXITED,name);
+            throw new DuplicateResourceException(Constants.ErrorKey.NAME_DUPLICATE,name);
         }
     }
     private boolean checkExistedPositionName(Long id,String name){

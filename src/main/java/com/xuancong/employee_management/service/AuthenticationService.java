@@ -39,7 +39,7 @@ public class AuthenticationService {
                 passwordEncoder.matches(authRequest.getPassword(), user.getPassword());
 
         if(!authenticated){
-            throw new BadCredentialsException(Constants.ErrorKey.PASSWORD_NOT_VALID);
+            throw new BadCredentialsException(Constants.ErrorKey.INVALID_PASSWORD);
         }
 
         String accessToken  = jwtService.generateToken(user, TokenType.ACCESS);
@@ -69,7 +69,7 @@ public class AuthenticationService {
     public AuthenticationResponse refresh(RefreshRequest refreshRequest){
         String refreshToken = refreshRequest.refreshToken();
         if(!jwtService.verifyJwt(refreshToken)){
-            throw new UnauthorizedException(Constants.ErrorKey.REFRESH_TOKEN_INVALID, refreshToken);
+            throw new UnauthorizedException(Constants.ErrorKey.INVALID_REFRESH_TOKEN, refreshToken);
         }
         Claims claimsJwt = jwtService.parseClaims(refreshToken);
 
@@ -115,7 +115,7 @@ public class AuthenticationService {
     public void logout(LogoutRequest logoutRequest){
         String refreshToken = logoutRequest.refreshToken();
         RefreshToken token = refreshTokenRepository.findByRefreshToken(refreshToken)
-                .orElseThrow(() -> new UnauthorizedException(Constants.ErrorKey.REFRESH_TOKEN_INVALID, refreshToken));
+                .orElseThrow(() -> new UnauthorizedException(Constants.ErrorKey.INVALID_REFRESH_TOKEN, refreshToken));
         refreshTokenRepository.delete(token);
 
     }

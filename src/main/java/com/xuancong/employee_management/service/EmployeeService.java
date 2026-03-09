@@ -81,9 +81,9 @@ public class EmployeeService {
     }
     private void validateUnique(EmployeeCreateRequest employeeCreateRequest ,Long employeeId){
         this.validateUniqueProperty(employeeId,employeeRepository::existsByPhoneAndIdNot,
-                employeeCreateRequest.phone(),Constants.ErrorKey.PHONE_DUPLICATE);
+                employeeCreateRequest.phone(),Constants.ErrorKey.PHONE_ALREADY_EXISTS);
         this.validateUniqueProperty(employeeId,employeeRepository::existsByEmailAndIdNot,
-                employeeCreateRequest.email(),Constants.ErrorKey.EMAIL_DUPLICATE);
+                employeeCreateRequest.email(),Constants.ErrorKey.EMAIL_ALREADY_EXISTS);
     }
 
     private <T,E> void validateUniqueProperty(E id, BiFunction<T, E, Boolean> finder, T property, String errorKey){

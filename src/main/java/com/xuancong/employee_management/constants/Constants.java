@@ -3,24 +3,20 @@ package com.xuancong.employee_management.constants;
 public class Constants {
     public class ErrorKey {
         public static final String NAME_DUPLICATE = "NAME_DUPLICATE";
-        public static final String POSITION_NAME_EXITED = "POSITION_NAME_EXITED";
         public static final String POSITION_NOT_FOUND = "POSITION_NOT_FOUND";
         public static final String POSITION_IN_USE = "POSITION_IN_USE";
         public static final String DEPARTMENT_NOT_FOUND = "DEPARTMENT_NOT_FOUND";
-        public static final String PHONE_DUPLICATE = "PHONE_DUPLICATE";
-        public static final String EMAIL_DUPLICATE = "EMAIL_DUPLICATE";
+        public static final String PHONE_ALREADY_EXISTS = "PHONE_ALREADY_EXISTS ";
+        public static final String EMAIL_ALREADY_EXISTS = "EMAIL_ALREADY_EXISTS ";
         public static final String EMPLOYEE_NOT_FOUND = "EMPLOYEE_NOT_FOUND";
-        public static final String DEPARTMENT_DUPLICATE = "DEPARTMENT_DUPLICATE";
-        public static final String DEPARTMENT_NOTFOUND = "DEPARTMENT_NOTFOUND";
-        public static final String DEPARTMENT_CONSTRAINT = "DEPARTMENT_CONSTRAINT";
-        public static final String USERNAME_NOT_FOUND = "USERNAME_NOT_FOUND";
-        public static final String CHECKIN_DUPLICATE = "CHECKIN_DUPLICATE";
+        public static final String DEPARTMENT_HAS_EMPLOYEES = "DEPARTMENT_HAS_EMPLOYEES";
+        public static final String CHECKIN_ALREADY_EXISTS = "CHECKIN_ALREADY_EXISTS ";
         public static final String CHECKIN_NOT_FOUND = "CHECKIN_NOT_FOUND";
-        public static final String CHECKOUT_DUPLICATE = "CHECKOUT_DUPLICATE";
+        public static final String CHECKOUT_ALREADY_EXISTS = "CHECKOUT_ALREADY_EXISTS ";
         public static final String FORBIDDEN = "FORBIDDEN";
         public static final String USER_NOT_FOUND = "USER_NOT_FOUND";
-        public static final String PASSWORD_NOT_VALID = "PASSWORD_NOT_VALID";
-        public static final String REFRESH_TOKEN_INVALID = "REFRESH_TOKEN_INVALID";
+        public static final String INVALID_PASSWORD = "INVALID_PASSWORD ";
+        public static final String INVALID_REFRESH_TOKEN = "INVALID_REFRESH_TOKEN ";
         public static final String ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
     }
     public final class Paging{
