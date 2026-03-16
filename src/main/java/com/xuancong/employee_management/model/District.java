@@ -17,7 +17,9 @@ public class District {
     private Long id;
     private String name;
 
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "district_id")
-    private District district;
+    @JoinColumn(name = "province_id")
+    private Province province;
+
 }

@@ -19,12 +19,10 @@ import java.util.List;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-    private final UserRepository userRepository;
     private final JwtAuthFilter jwtAuthFilter;
 
-    public SecurityConfig(UserRepository userRepository, JwtAuthFilter jwtAuthFilter) {
+    public SecurityConfig( JwtAuthFilter jwtAuthFilter) {
 
-        this.userRepository = userRepository;
         this.jwtAuthFilter = jwtAuthFilter;
 
     }

@@ -5,10 +5,9 @@ import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
-import com.xuancong.employee_management.event.EmployeeCreatedEvent;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
-import com.xuancong.employee_management.kafka.message.Event;
+import com.xuancong.employee_management.kafka.message.EmployCreatedMessage;
 import com.xuancong.employee_management.model.Employee;
 import com.xuancong.employee_management.model.User;
 import com.xuancong.employee_management.repository.DepartmentRepository;
@@ -43,54 +42,66 @@ public class EmployeeService {
     private final UserRepository userRepository;
     private final MailService mailService;
     private final DepartmentRepository departmentRepository;
-    private final KafkaTemplate<String, Event<EmployeeCreatedEvent>> kafkaTemplate;
+    private final KafkaTemplate<String, EmployCreatedMessage> kafkaTemplate;
 
 
     public EmployeeResponse createEmployee(EmployeeCreateRequest employeeCreateRequest) {
-        this.validateEmployeeInfo(employeeCreateRequest,null);
+        this.validateEmployeeInfo(employeeCreateRequest, null);
         Employee employee = employeeCreateRequest.toBaseEmployee();
         String employeeCode = this.generateEmployeeCode();
         employee.setEmployeeCode(employeeCode);
-        this.setReferenceOrThrow(employeeCreateRequest,employee);
+        this.setReferenceOrThrow(employeeCreateRequest, employee);
         // tạo user
-        String rawPassword = this.genericAccount(employeeCreateRequest, employeeCode,employee);
+        String password = this.genericAccount(employeeCreateRequest, employeeCode, employee);
         employeeRepository.save(employee);
-        this.sendEmail(employeeCreateRequest,employeeCode,rawPassword);
-        this.publishEmployeeCreatedEvent(employeeCreateRequest.email(),employeeCode,rawPassword);
+        this.publishEmployeeCreatedEvent(employeeCreateRequest.email(), employeeCode, password);
         return EmployeeResponse.fromEmployee(employee);
 
     }
 
-    private void publishEmployeeCreatedEvent(String email,String code,String rawPassword) {
-        Event<EmployeeCreatedEvent> event =
-                new Event<>("EMPLOYEE_CREATED",
-                        new EmployeeCreatedEvent(email, code, rawPassword));
-        kafkaTemplate.send("employee-created-topic", event);
+    private void publishEmployeeCreatedEvent(String email, String code, String password) {
+        EmployCreatedMessage message = EmployCreatedMessage.builder()
+                .email(email)
+                .password(password)
+                .username(code)
+                .build();
+        kafkaTemplate.send("employee-created-topic", message)
+                .whenComplete((result, ex) -> {
+                    if (ex != null) {
+                        System.out.println(" Send failed: " + ex.getMessage());
+                    } else {
+                        System.out.println("Sent to partition: "
+                                + result.getRecordMetadata().partition()
+                                + ", offset: " + result.getRecordMetadata().offset());
+                    }
+                });
     }
 
-    private void setReferenceOrThrow(EmployeeCreateRequest employeeCreateRequest,Employee employee){
-        this.setEntityIfExistsOrThrow(employeeCreateRequest.positionId(), positionRepository::findById ,
-                Constants.ErrorKey.POSITION_NOT_FOUND,employee::setPosition);
-        this.setEntityIfExistsOrThrow(employeeCreateRequest.departmentId(),departmentRepository::findById,
-                Constants.ErrorKey.DEPARTMENT_NOT_FOUND,employee::setDepartment);
+    private void setReferenceOrThrow(EmployeeCreateRequest employeeCreateRequest, Employee employee) {
+        this.setEntityIfExistsOrThrow(employeeCreateRequest.positionId(), positionRepository::findById,
+                Constants.ErrorKey.POSITION_NOT_FOUND, employee::setPosition);
+        this.setEntityIfExistsOrThrow(employeeCreateRequest.departmentId(), departmentRepository::findById,
+                Constants.ErrorKey.DEPARTMENT_NOT_FOUND, employee::setDepartment);
 
     }
 
-    private void validateEmployeeInfo(EmployeeCreateRequest employeeCreateRequest,Long employeeId ) {
-        this.validateUnique(employeeCreateRequest,employeeId);
-    }
-    private void validateUnique(EmployeeCreateRequest employeeCreateRequest ,Long employeeId){
-        this.validateUniqueProperty(employeeId,employeeRepository::existsByPhoneAndIdNot,
-                employeeCreateRequest.phone(),Constants.ErrorKey.PHONE_ALREADY_EXISTS);
-        this.validateUniqueProperty(employeeId,employeeRepository::existsByEmailAndIdNot,
-                employeeCreateRequest.email(),Constants.ErrorKey.EMAIL_ALREADY_EXISTS);
+    private void validateEmployeeInfo(EmployeeCreateRequest employeeCreateRequest, Long employeeId) {
+        this.validateUnique(employeeCreateRequest, employeeId);
     }
 
-    private <T,E> void validateUniqueProperty(E id, BiFunction<T, E, Boolean> finder, T property, String errorKey){
-        if(finder.apply(property,id)){
-            throw new DuplicateResourceException(errorKey,property);
+    private void validateUnique(EmployeeCreateRequest employeeCreateRequest, Long employeeId) {
+        this.validateUniqueProperty(employeeId, employeeRepository::existsByPhoneAndIdNot,
+                employeeCreateRequest.phone(), Constants.ErrorKey.PHONE_ALREADY_EXISTS);
+        this.validateUniqueProperty(employeeId, employeeRepository::existsByEmailAndIdNot,
+                employeeCreateRequest.email(), Constants.ErrorKey.EMAIL_ALREADY_EXISTS);
+    }
+
+    private <T, E> void validateUniqueProperty(E id, BiFunction<T, E, Boolean> finder, T property, String errorKey) {
+        if (finder.apply(property, id)) {
+            throw new DuplicateResourceException(errorKey, property);
         }
     }
+
     // có thể trùng code nếu hai req gởi cùng lúc=> chạy song song hai thread => fix bằng SEQUENCE
     private String generateEmployeeCode() {
         String maxCode = employeeRepository.findMaxEmployeeCode();
@@ -102,15 +113,17 @@ public class EmployeeService {
         int number = Integer.parseInt(maxCode.substring(3));
         return String.format("EMP%04d", number + 1);
     }
-    private <E> void setEntityIfExistsOrThrow(Long id, Function<Long, Optional<E>> finderById , String errorKey , Consumer<E> setter){
+
+    private <E> void setEntityIfExistsOrThrow(Long id, Function<Long, Optional<E>> finderById, String errorKey, Consumer<E> setter) {
         Optional<E> optional = finderById.apply(id);
-        if(optional.isEmpty()){
-            throw  new NotFoundException(errorKey);
+        if (optional.isEmpty()) {
+            throw new NotFoundException(errorKey);
         }
         setter.accept(optional.get());
 
     }
-    private String genericAccount(EmployeeCreateRequest employeeCreateRequest,  String employeeCode, Employee employee){
+
+    private String genericAccount(EmployeeCreateRequest employeeCreateRequest, String employeeCode, Employee employee) {
         String rawPassword = PasswordUtils.generateRandomPassword(10);
         String encoded = passwordEncoder.encode(rawPassword);
         User user = new User();
@@ -124,23 +137,21 @@ public class EmployeeService {
         return rawPassword;
     }
 
-    private void sendEmail(EmployeeCreateRequest employeeCreateRequest ,String employeeCode,String rawPassword) {
-        this.mailService.sendAccountEmail(employeeCreateRequest.email(),employeeCode,rawPassword);
-    }
 
-    public void updateEmployee(Long id ,EmployeeCreateRequest employeeCreateRequest) {
-        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
-        this.validateEmployeeInfo(employeeCreateRequest,id);
-        this.updateFieldEmployee(employeeCreateRequest,employee);
+    public void updateEmployee(Long id, EmployeeCreateRequest employeeCreateRequest) {
+        Employee employee = this.validateExitedEmployee(id, employeeRepository, Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+        this.validateEmployeeInfo(employeeCreateRequest, id);
+        this.updateFieldEmployee(employeeCreateRequest, employee);
         employeeRepository.save(employee);
     }
-    private <E,T> T validateExitedEmployee(E id,JpaRepository<T,E> finder,String errorKey) {
+
+    private <E, T> T validateExitedEmployee(E id, JpaRepository<T, E> finder, String errorKey) {
         return finder.findById(id)
-                .orElseThrow(() -> new NotFoundException(errorKey,id));
+                .orElseThrow(() -> new NotFoundException(errorKey, id));
 
     }
 
-    public void updateFieldEmployee(EmployeeCreateRequest employeeCreateRequest , Employee employee){
+    public void updateFieldEmployee(EmployeeCreateRequest employeeCreateRequest, Employee employee) {
         employee.setPhone(employeeCreateRequest.phone());
         employee.setEmail(employeeCreateRequest.email());
         employee.setName(employeeCreateRequest.name());
@@ -149,33 +160,32 @@ public class EmployeeService {
         employee.setHireDate(employeeCreateRequest.hireDate());
         employee.setStatus(employeeCreateRequest.status());
         employee.setAvatarId(employeeCreateRequest.avatarId());
-        this.setReferenceOrThrow(employeeCreateRequest,employee);
+        this.setReferenceOrThrow(employeeCreateRequest, employee);
 
     }
 
-    public EmployeeDetailResponse getEmployee(Long id){
-        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+    public EmployeeDetailResponse getEmployee(Long id) {
+        Employee employee = this.validateExitedEmployee(id, employeeRepository, Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
         Long avatarId = employee.getAvatarId();
         // lấy url ,
-        return  EmployeeDetailResponse.from(employee);
+        return EmployeeDetailResponse.from(employee);
 
     }
 
     public PageResponse<EmployeeResponse> getEmployees(String name, String code, String email, Long departmentId,
-                                     int page, int size, String sort){
+                                                       int page, int size, String sort) {
 
 
-
-        Pageable pageable = PageRequest.of(page,size);
-        Specification<Employee> specification = EmployeeSpecification.filter(name,code,email,departmentId);
+        Pageable pageable = PageRequest.of(page, size);
+        Specification<Employee> specification = EmployeeSpecification.filter(name, code, email, departmentId);
         Sort sortEmployee = Sort.by(Sort.Direction.DESC, Constants.Column.ID);
-        Page<Employee> employeePage = this.employeeRepository.findAll(specification,pageable);
+        Page<Employee> employeePage = this.employeeRepository.findAll(specification, pageable);
         List<Employee> employees = employeePage.getContent();
-        List<EmployeeResponse>  content = employees.stream()
+        List<EmployeeResponse> content = employees.stream()
                 .map(EmployeeResponse::fromEmployee)
                 .toList();
 
-        return  new PageResponse<EmployeeResponse>(
+        return new PageResponse<EmployeeResponse>(
                 content,
                 (int) employeePage.getTotalElements(),
                 employeePage.getTotalPages(),
@@ -185,8 +195,8 @@ public class EmployeeService {
 
     }
 
-    public void deleteEmployee(Long id){
-        Employee employee = this.validateExitedEmployee(id,employeeRepository,Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
+    public void deleteEmployee(Long id) {
+        Employee employee = this.validateExitedEmployee(id, employeeRepository, Constants.ErrorKey.EMPLOYEE_NOT_FOUND);
 
         if (employee.getUser() != null) {
             userRepository.delete(employee.getUser());

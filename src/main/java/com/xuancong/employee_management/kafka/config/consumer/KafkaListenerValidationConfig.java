@@ -6,10 +6,10 @@ import org.springframework.kafka.config.KafkaListenerEndpointRegistrar;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 @Configuration
-public class KafkaListenerConfig implements KafkaListenerConfigurer {
+public class KafkaListenerValidationConfig implements KafkaListenerConfigurer {
     private final LocalValidatorFactoryBean localValidatorFactoryBean;
 
-    public KafkaListenerConfig(LocalValidatorFactoryBean localValidatorFactoryBean) {
+    public KafkaListenerValidationConfig(LocalValidatorFactoryBean localValidatorFactoryBean) {
         this.localValidatorFactoryBean = localValidatorFactoryBean;
     }
 

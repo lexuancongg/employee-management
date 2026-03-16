@@ -1,6 +1,5 @@
 package com.xuancong.employee_management.model;
 
-import com.xuancong.employee_management.listener.CustomAuditingListener;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.MappedSuperclass;
 import lombok.Getter;
@@ -9,13 +8,14 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.ZonedDateTime;
 
 @MappedSuperclass
 @Getter
 @Setter
-@EntityListeners(CustomAuditingListener.class)
+@EntityListeners(AuditingEntityListener.class)
 public abstract  class BaseAuditEntity {
     @CreationTimestamp
     private ZonedDateTime createdAt;

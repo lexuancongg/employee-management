@@ -5,7 +5,6 @@ import com.xuancong.employee_management.dto.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
-import com.xuancong.employee_management.dto.employee.EmployeePagingResponse;
 import com.xuancong.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

@@ -26,9 +26,11 @@ public class BranchController {
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/id")
+    @PutMapping("/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
                                        @Valid @RequestBody BranchCreateRequest branchCreateRequest){
+        branchService.update(id, branchCreateRequest);
+        return ResponseEntity.noContent().build();
 
     }
 }
