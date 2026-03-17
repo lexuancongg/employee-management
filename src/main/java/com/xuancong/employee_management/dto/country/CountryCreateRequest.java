@@ -1,6 +1,6 @@
 package com.xuancong.employee_management.dto.country;
 
-import com.lexuancong.address.model.Country;
+import com.xuancong.employee_management.model.Country;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 

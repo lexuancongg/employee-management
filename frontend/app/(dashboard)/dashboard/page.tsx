@@ -246,7 +246,6 @@ const Dashboard: React.FC = () => {
                             </div>
                         </div>
 
-                        {/* Employee Status - Bar Chart đẹp (Recharts) */}
                         <div className="col-span-4 bg-white rounded-3xl p-6 shadow-sm">
                             <div className="font-semibold text-lg mb-6 flex items-center justify-between">
                                 Employee Status

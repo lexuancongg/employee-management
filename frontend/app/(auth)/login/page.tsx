@@ -2,8 +2,8 @@
 
 import { LoginResponse } from "@/models/auth/loginResponse"
 import { AuthRequest } from "@/models/auth/authRequest"
-import authenticationService from "@/services/authenticationService"
 import { useState } from "react"
+import authenticationService from "@/services/auth/authenticationService"
 
 export default function LoginPage() {
 
@@ -28,8 +28,8 @@ export default function LoginPage() {
 
     }
     const handleLoginSuccess = (res:LoginResponse)=>{
-        console.log("login thành công")
         const role :string = res.role;
+
         
     }
 
@@ -42,8 +42,6 @@ export default function LoginPage() {
                 </h1>
 
                 <form onSubmit={handleLogin} className="flex flex-col gap-4">
-
-                    {/* email */}
                     <div>
                         <label className="text-sm text-gray-600">
                             username

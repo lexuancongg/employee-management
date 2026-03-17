@@ -5,13 +5,12 @@ import com.xuancong.employee_management.dto.branch.BranchResponse;
 import com.xuancong.employee_management.service.BranchService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/branchs")
+@RequestMapping("/branchs")
 public class BranchController {
     private final BranchService branchService;
 
