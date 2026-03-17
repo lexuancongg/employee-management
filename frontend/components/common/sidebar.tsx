@@ -16,20 +16,20 @@ export default function Sidebar() {
                     Dashboard
                 </Link>
 
-                <Link href="/staff" className="px-6 py-3 hover:bg-slate-700">
-                    Staff
+                <Link href="/dashboard/employees" className="px-6 py-3 hover:bg-slate-700">
+                    Employees
                 </Link>
 
-                <Link href="/core-hr" className="px-6 py-3 hover:bg-slate-700">
-                    Core HR
+                <Link href="/dashboard/positions" className="px-6 py-3 hover:bg-slate-700">
+                    Positions
                 </Link>
 
-                <Link href="/organization" className="px-6 py-3 hover:bg-slate-700">
-                    Organization
+                <Link href="/dashboard/branchs" className="px-6 py-3 hover:bg-slate-700">
+                    Branchs
                 </Link>
 
-                <Link href="/assets" className="px-6 py-3 hover:bg-slate-700">
-                    Assets
+                <Link href="/dashboard/address/countries" className="px-6 py-3 hover:bg-slate-700">
+                    Countries
                 </Link>
 
                 <Link href="/attendance" className="px-6 py-3 hover:bg-slate-700">

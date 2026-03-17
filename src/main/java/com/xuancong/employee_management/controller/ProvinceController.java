@@ -2,7 +2,7 @@ package com.xuancong.employee_management.controller;
 
 
 import com.xuancong.employee_management.constants.Constants;
-import com.xuancong.employee_management.dto.paging.PagingResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.province.ProvinceCreateRequest;
 import com.xuancong.employee_management.dto.province.ProvinceResponse;
 import com.xuancong.employee_management.service.ProvinceService;
@@ -22,14 +22,14 @@ public class ProvinceController {
 
 
     @GetMapping("/management/provinces/paging")
-    public ResponseEntity<PagingResponse<ProvinceResponse>> getProvincesPaging(
+    public ResponseEntity<PageResponse<ProvinceResponse>> getProvincesPaging(
             @RequestParam(value = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
             final int pageIndex,
             @RequestParam(value = "pageSize",defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false)
             final  int pageSize,
             @RequestParam(value = "countryId",required = false) final Long countryId
     ) {
-        PagingResponse<ProvinceResponse> provincePaging =
+        PageResponse<ProvinceResponse> provincePaging =
                 provinceService.getProvincesPaging(pageIndex,pageSize,countryId);
         return ResponseEntity.ok(provincePaging);
 

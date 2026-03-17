@@ -1,7 +1,7 @@
 package com.xuancong.employee_management.controller;
 
 import com.xuancong.employee_management.constants.Constants;
-import com.xuancong.employee_management.dto.PageResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;

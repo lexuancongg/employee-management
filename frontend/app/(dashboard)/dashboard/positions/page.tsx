@@ -2,18 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import positionService from '@/services/positions/positionService';
+import { PositionResponse } from '@/models/positions/positionResponse';
+import { PageResponse } from '@/models/page/pageResponse';
+import { PositionCreateRequest } from '@/models/positions/positionCreateRequest';
 
-type PositionResponse = {
-  id: number;
-  name: string;
-};
-
-type PageResponse<T> = {
-  content: T[];
-  totalElements: number;
-  totalPages: number;
-  isLast: boolean;
-};
 
 export default function PositionsPage() {
   const [positions, setPositions] = useState<PositionResponse[]>([]);
@@ -23,7 +15,6 @@ export default function PositionsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // modal
   const [open, setOpen] = useState(false);
   const [name, setName] = useState('');
 
@@ -51,8 +42,12 @@ export default function PositionsPage() {
   const handleCreate = async () => {
     if (!name.trim()) return;
 
+    const position: PositionCreateRequest = {
+      name: name
+    }
+
     try {
-    //   await positionService.createPosition({ name });
+      await positionService.createPosition(position);
       setOpen(false);
       setName('');
       fetchPositions();
@@ -61,9 +56,21 @@ export default function PositionsPage() {
     }
   };
 
+
+  const handleDelete = async (id: number) => {
+    positionService.deletePosition(id)
+      .then(res => {
+        if (res.ok) {
+          fetchPositions();
+        }
+      })
+      .catch((err)=>{
+        console.log(err)
+      })
+  }
+
   return (
     <div className="p-6 space-y-6">
-      {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold">Positions</h1>
@@ -117,10 +124,13 @@ export default function PositionsPage() {
                   <td className="p-4">{p.id}</td>
                   <td className="p-4 font-medium">{p.name}</td>
                   <td className="p-4 text-right space-x-2">
-                    <button className="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                    <button
+                      className="px-3 py-1 border rounded-lg hover:bg-gray-100">
                       Edit
                     </button>
-                    <button className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">
                       Delete
                     </button>
                   </td>

@@ -1,7 +1,7 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
-import com.xuancong.employee_management.dto.PageResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.position.PositionCreateRequest;
 import com.xuancong.employee_management.dto.position.PositionResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;

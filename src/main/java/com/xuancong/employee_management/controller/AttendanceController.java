@@ -3,7 +3,7 @@ package com.xuancong.employee_management.controller;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.attendance.AttendanceResponse;
 import com.xuancong.employee_management.dto.attendance.AttendanceStatusResponse;
-import com.xuancong.employee_management.dto.PageResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.service.AttendanceService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

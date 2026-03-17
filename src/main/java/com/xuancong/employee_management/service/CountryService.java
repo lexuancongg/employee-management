@@ -4,7 +4,7 @@ package com.xuancong.employee_management.service;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.country.CountryCreateRequest;
 import com.xuancong.employee_management.dto.country.CountryResponse;
-import com.xuancong.employee_management.dto.paging.PagingResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
@@ -36,7 +36,7 @@ public class CountryService {
         this.addressRepository = addressRepository;
     }
 
-    public PagingResponse<CountryResponse> getCountriesPaging(final int pageIndex, final int pageSize){
+    public PageResponse<CountryResponse> getCountriesPaging(final int pageIndex, final int pageSize){
         final Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.ASC,"name"));
         final Page<Country> countryPage = countryRepository.findAll(pageable);
         List<Country> countries = countryPage.getContent();
@@ -44,13 +44,11 @@ public class CountryService {
         List<CountryResponse> countryPayload = countries.stream()
                 .map(CountryResponse::fromCountry)
                 .toList();
-        return PagingResponse.<CountryResponse>builder()
-                .pageIndex(pageIndex)
-                .pageSize(pageSize)
+        return PageResponse.<CountryResponse>builder()
                 .totalElements(countryPage.getTotalElements())
                 .totalPages(countryPage.getTotalPages())
-                .payload(countryPayload)
-                .last(countryPage.isLast())
+                .content(countryPayload)
+                .isLast(countryPage.isLast())
                 .build();
 
     }

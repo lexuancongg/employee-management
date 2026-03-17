@@ -1,5 +1,7 @@
 package com.xuancong.employee_management.controller;
 
+import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.branch.BranchCreateRequest;
 import com.xuancong.employee_management.dto.branch.BranchResponse;
 import com.xuancong.employee_management.service.BranchService;
@@ -10,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/branchs")
+@RequestMapping("/api/branchs")
 public class BranchController {
     private final BranchService branchService;
 
@@ -32,4 +34,19 @@ public class BranchController {
         return ResponseEntity.noContent().build();
 
     }
+
+
+    @GetMapping()
+    public ResponseEntity<PageResponse<BranchResponse>> getBranchs(
+            @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,
+            @RequestParam(name = "pageSize", defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false) int pageSize,
+            @RequestParam(name = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false) int pageIndex
+
+    ){
+        return ResponseEntity.ok(
+                branchService.getBranchs(pageIndex,pageSize,keyword)
+        );
+    }
+
+
 }

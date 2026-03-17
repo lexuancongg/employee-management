@@ -1,7 +1,7 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
-import com.xuancong.employee_management.dto.paging.PagingResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.province.ProvinceCreateRequest;
 import com.xuancong.employee_management.dto.province.ProvinceResponse;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
@@ -32,7 +32,7 @@ public class ProvinceService {
     private final DistrictRepository districtRepository;
     private final AddressRepository addressRepository;
 
-    public PagingResponse<ProvinceResponse> getProvincesPaging(int pageIndex, int pageSize, Long countryId){
+    public PageResponse<ProvinceResponse> getProvincesPaging(int pageIndex, int pageSize, Long countryId){
         Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Order.asc("name")));
         Page<Province> provincePage = this.provinceRepository.findAll(
                 ProvinceSpecification.getProvincesByCountryId(countryId), pageable
@@ -43,13 +43,11 @@ public class ProvinceService {
                 .map(ProvinceResponse::fromProvince)
                 .toList();
 
-        return PagingResponse.<ProvinceResponse>builder()
-                .payload(provincePayload)
+        return PageResponse.<ProvinceResponse>builder()
+                .content(provincePayload)
                 .totalPages(provincePage.getTotalPages())
                 .totalElements(provincePage.getTotalElements())
-                .last(provincePage.isLast())
-                .pageIndex(provincePage.getNumber())
-                .pageSize(provincePage.getSize())
+                .isLast(provincePage.isLast())
                 .build();
     }
 

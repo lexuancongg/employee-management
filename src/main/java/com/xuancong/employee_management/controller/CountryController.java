@@ -4,7 +4,7 @@ package com.xuancong.employee_management.controller;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.country.CountryCreateRequest;
 import com.xuancong.employee_management.dto.country.CountryResponse;
-import com.xuancong.employee_management.dto.paging.PagingResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.service.CountryService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class CountryController {
 
     private final CountryService countryService;
@@ -22,10 +23,9 @@ public class CountryController {
     }
 
 
-    // checked
 
-    @GetMapping("/management/countries/paging")
-    public ResponseEntity<PagingResponse<CountryResponse>> getCountriesPaging(
+    @GetMapping("/countries")
+    public ResponseEntity<PageResponse<CountryResponse>> getCountriesPaging(
             @RequestParam(name ="pageIndex" ,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
             final int pageIndex,
             @RequestParam(name = "pageSize" ,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false)
@@ -42,7 +42,7 @@ public class CountryController {
     }
 
     // checked
-    @PostMapping("/management/countries")
+    @PostMapping("/countries")
     public ResponseEntity<CountryResponse> createCountry(
             @RequestBody @Valid final CountryCreateRequest countryCreateRequest,
             final UriComponentsBuilder uriComponentsBuilder
@@ -67,7 +67,7 @@ public class CountryController {
 
 
     // checked
-    @DeleteMapping("/management/countries/{id}")
+    @DeleteMapping("/countries/{id}")
     public ResponseEntity<Void> deleteCountry(@PathVariable Long id){
         countryService.deleteCountry(id);
         return ResponseEntity.noContent().build();

@@ -1,6 +1,7 @@
 package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.address.AddressCreateRequest;
 import com.xuancong.employee_management.dto.branch.BranchCreateRequest;
 import com.xuancong.employee_management.dto.branch.BranchResponse;
@@ -10,11 +11,14 @@ import com.xuancong.employee_management.model.Address;
 import com.xuancong.employee_management.model.Branch;
 import com.xuancong.employee_management.repository.*;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 @Service
@@ -90,6 +94,24 @@ public class BranchService {
         this.setAddress(address,branchCreateRequest.address());
         branch.setAddress(address);
         branchRepository.save(branch);
+
+
+    }
+
+    public PageResponse<BranchResponse> getBranchs(int pageIndex,int pageSize,String name){
+        Pageable pageable = PageRequest.of(pageIndex, pageSize);
+        Page<Branch> branchPage = branchRepository.findAll(pageable);
+
+        List<BranchResponse> payload = branchPage.getContent()
+                .stream()
+                .map(BranchResponse::fromBranch)
+                .toList();
+
+        return PageResponse.<BranchResponse>builder()
+                .content(payload)
+                .isLast(branchPage.isLast())
+                .totalElements(branchPage.getTotalPages())
+                .build();
 
 
     }

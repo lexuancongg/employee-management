@@ -3,7 +3,7 @@ package com.xuancong.employee_management.service;
 import com.xuancong.employee_management.constants.Constants;
 import com.xuancong.employee_management.dto.attendance.AttendanceResponse;
 import com.xuancong.employee_management.dto.attendance.AttendanceStatusResponse;
-import com.xuancong.employee_management.dto.PageResponse;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.exception.AccessDeniedException;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
