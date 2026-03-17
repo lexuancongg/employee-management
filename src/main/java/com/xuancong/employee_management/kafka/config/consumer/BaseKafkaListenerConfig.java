@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 
@@ -28,6 +29,11 @@ public abstract class BaseKafkaListenerConfig <K,V>{
     public ConcurrentKafkaListenerContainerFactory<K,V> listenerContainerFactory(){
         ConcurrentKafkaListenerContainerFactory<K,V> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(this.typeConsumerFactory(keyType, valueType));
+        factory.setCommonErrorHandler(new DefaultErrorHandler((record, exception) -> {
+            System.out.println(" ERROR consuming message: " + exception.getMessage());
+            System.out.println("Record value: " + record.value());
+            System.out.println("Cause: " + exception.getCause());
+        }));
         return factory;
 
     }
@@ -36,11 +42,22 @@ public abstract class BaseKafkaListenerConfig <K,V>{
         ErrorHandlingDeserializer<K> keyDeserializer = new ErrorHandlingDeserializer<>(
                 getJsonDeserializer(this.keyType)
         );
+        keyDeserializer.setFailedDeserializationFunction(info -> {
+            System.out.println(" Key deserialize failed: " + new String(info.getData()));
+            System.out.println(" Exception: " + info.getException().getMessage());
+            return null;
+        });
+
 
         ErrorHandlingDeserializer<V> valueDeserializer = new ErrorHandlingDeserializer<>(
                 getJsonDeserializer(this.valueType)
         );
 
+        valueDeserializer.setFailedDeserializationFunction(info -> {
+            System.out.println(" Value deserialize failed: " + new String(info.getData()));
+            System.out.println(" Exception: " + info.getException().getMessage());
+            return null;
+        });
         Map<String,Object> consumerProps = this.kafkaProperties.buildConsumerProperties();
         return new DefaultKafkaConsumerFactory<>(consumerProps,keyDeserializer,valueDeserializer);
     }

@@ -23,6 +23,10 @@ public class Constants {
         public static final String INVALID_PASSWORD = "INVALID_PASSWORD ";
         public static final String INVALID_REFRESH_TOKEN = "INVALID_REFRESH_TOKEN ";
         public static final String ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
+        public static final String COUNTRY_IS_USED_BY_ADDRESS = "COUNTRY_IS_USED_BY_ADDRESS";
+
+        public static final String COUNTRY_IS_USED_BY_PROVINCE = "COUNTRY_IS_USED_BY_PROVINCE";
+
     }
     public final class Paging{
         public static final String DEFAULT_PAGE_NUMBER = "0";

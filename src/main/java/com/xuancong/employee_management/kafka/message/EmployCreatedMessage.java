@@ -1,11 +1,16 @@
 package com.xuancong.employee_management.kafka.message;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@Data
 @Builder
-public record EmployCreatedMessage(
-        String email,
-        String password,
-        String username
-) {
+@NoArgsConstructor
+@AllArgsConstructor
+public class EmployCreatedMessage {
+    private String email;
+    private String password;
+    private String username;
 }

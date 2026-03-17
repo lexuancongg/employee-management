@@ -29,5 +29,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> , JpaS
 
     Optional<Employee> findByUser_Id(Long userId);
 
+    boolean existsByBranch(Branch branch);
+
 //    boolean existsByBranch(Branch branch);
 }

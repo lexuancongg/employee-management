@@ -59,14 +59,14 @@ public class AuthenticationController {
                 .build();
 
         return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshCookie.toString())
-                .body(
-                        new LoginResponse(
-                                authResponse.role(),
-                                authResponse.expiresIn()
-                        )
-                );
+                .headers(headers -> {
+                    headers.add(HttpHeaders.SET_COOKIE, accessCookie.toString());
+                    headers.add(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+                })
+                .body(new LoginResponse(
+                        authResponse.role(),
+                        authResponse.expiresIn()
+                ));
     }
 
     @PostMapping("/authentication/refresh")

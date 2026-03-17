@@ -53,9 +53,9 @@ public class BranchService {
     public void delete(Long id){
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.BRANCH_NOT_FOUND));
-//        if(employeeRepository.existsByBranch(branch)){
-//            throw new ResourceInUseException(Constants.ErrorKey.BRANCH_HAS_EMPLOYEE);
-//        }
+        if(employeeRepository.existsByBranch(branch)){
+            throw new ResourceInUseException(Constants.ErrorKey.BRANCH_HAS_EMPLOYEE);
+        }
         branchRepository.delete(branch);
     }
     private void setAddress(Address address, AddressCreateRequest req){
