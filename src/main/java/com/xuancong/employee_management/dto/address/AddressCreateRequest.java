@@ -1,5 +1,6 @@
 package com.xuancong.employee_management.dto.address;
 
+import com.xuancong.employee_management.model.Address;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
@@ -13,5 +14,7 @@ public record AddressCreateRequest(
         @NotBlank
         String specificAddress
 ) {
+
+
 
 }

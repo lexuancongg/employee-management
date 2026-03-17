@@ -8,6 +8,7 @@ public class Constants {
         public static final String BRANCH_NOT_FOUND = "BRANCH_NOT_FOUND";
         public static final String BRANCH_HAS_EMPLOYEE = "BRANCH_HAS_EMPLOYEE";
         public static final String NAME_DUPLICATE = "NAME_DUPLICATE";
+        public static final String ADDRESS_NOT_FOUND = "ADDRESS_NOT_FOUND";
         public static final String POSITION_NOT_FOUND = "POSITION_NOT_FOUND";
         public static final String POSITION_IN_USE = "POSITION_IN_USE";
         public static final String DEPARTMENT_NOT_FOUND = "DEPARTMENT_NOT_FOUND";
