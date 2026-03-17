@@ -24,7 +24,8 @@ public class Constants {
         public static final String INVALID_REFRESH_TOKEN = "INVALID_REFRESH_TOKEN ";
         public static final String ROLE_NOT_FOUND = "ROLE_NOT_FOUND";
         public static final String COUNTRY_IS_USED_BY_ADDRESS = "COUNTRY_IS_USED_BY_ADDRESS";
-
+        public static final String PROVINCE_IS_USED_BY_DISTRICT = "PROVINCE_IS_USED_BY_DISTRICT";
+        public static final String PROVINCE_IS_USED_BY_ADDRESS = "PROVINCE_IS_USED_BY_ADDRESS";
         public static final String COUNTRY_IS_USED_BY_PROVINCE = "COUNTRY_IS_USED_BY_PROVINCE";
 
     }
