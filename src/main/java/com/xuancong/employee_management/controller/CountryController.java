@@ -24,25 +24,26 @@ public class CountryController {
 
 
 
-    @GetMapping("/countries")
+    @GetMapping("/management/countries")
     public ResponseEntity<PageResponse<CountryResponse>> getCountriesPaging(
             @RequestParam(name ="pageIndex" ,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
             final int pageIndex,
             @RequestParam(name = "pageSize" ,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false)
-            final int pageSize
-    ){
-        return ResponseEntity.ok(countryService.getCountriesPaging(pageIndex,pageSize));
+            final int pageSize,
+            @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword
+            ){
+        return ResponseEntity.ok(countryService.getCountriesPaging(pageIndex,pageSize,keyword));
     }
 
 
     // checked
-    @GetMapping({"/management/countries","/countries"})
+    @GetMapping({"/employee/countries"})
     public ResponseEntity<List<CountryResponse>> getCountries(){
         return ResponseEntity.ok(countryService.getCountries());
     }
 
     // checked
-    @PostMapping("/countries")
+    @PostMapping("/management/countries")
     public ResponseEntity<CountryResponse> createCountry(
             @RequestBody @Valid final CountryCreateRequest countryCreateRequest,
             final UriComponentsBuilder uriComponentsBuilder
@@ -67,7 +68,7 @@ public class CountryController {
 
 
     // checked
-    @DeleteMapping("/countries/{id}")
+    @DeleteMapping("/management/countries/{id}")
     public ResponseEntity<Void> deleteCountry(@PathVariable Long id){
         countryService.deleteCountry(id);
         return ResponseEntity.noContent().build();

@@ -36,9 +36,9 @@ public class CountryService {
         this.addressRepository = addressRepository;
     }
 
-    public PageResponse<CountryResponse> getCountriesPaging(final int pageIndex, final int pageSize){
+    public PageResponse<CountryResponse> getCountriesPaging(final int pageIndex, final int pageSize,String keyword){
         final Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.ASC,"name"));
-        final Page<Country> countryPage = countryRepository.findAll(pageable);
+        final Page<Country> countryPage = countryRepository.findAllByNameContainingIgnoreCase(keyword,pageable);
         List<Country> countries = countryPage.getContent();
 
         List<CountryResponse> countryPayload = countries.stream()

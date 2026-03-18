@@ -22,16 +22,18 @@ public class ProvinceController {
     }
 
 
-    @GetMapping("/provinces")
+    @GetMapping("/management/provinces")
     public ResponseEntity<PageResponse<ProvinceResponse>> getProvincesPaging(
             @RequestParam(value = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
             final int pageIndex,
             @RequestParam(value = "pageSize",defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false)
             final  int pageSize,
-            @RequestParam(value = "countryId",required = false) final Long countryId
+            @RequestParam(value = "countryId",required = false) final Long countryId,
+            @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword
+
     ) {
         PageResponse<ProvinceResponse> provincePaging =
-                provinceService.getProvincesPaging(pageIndex,pageSize,countryId);
+                provinceService.getProvincesPaging(pageIndex,pageSize,countryId,keyword);
         return ResponseEntity.ok(provincePaging);
 
     }

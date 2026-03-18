@@ -32,10 +32,10 @@ public class ProvinceService {
     private final DistrictRepository districtRepository;
     private final AddressRepository addressRepository;
 
-    public PageResponse<ProvinceResponse> getProvincesPaging(int pageIndex, int pageSize, Long countryId){
+    public PageResponse<ProvinceResponse> getProvincesPaging(int pageIndex, int pageSize, Long countryId,String keyword){
         Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Order.asc("name")));
         Page<Province> provincePage = this.provinceRepository.findAll(
-                ProvinceSpecification.getProvincesByCountryId(countryId), pageable
+                ProvinceSpecification.getProvincesByCountryId(countryId,keyword), pageable
         );
         List<Province> provinces = provincePage.getContent();
 

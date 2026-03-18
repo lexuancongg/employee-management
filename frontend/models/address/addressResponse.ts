@@ -8,3 +8,13 @@ export type AddressResponse = {
   districtName: string;
   specificAddress: string;
 };
+
+
+
+
+export type AddressCreateRequest = {
+  countryId: number;
+  provinceId: number;
+  districtId: number;
+  specificAddress: string;
+};

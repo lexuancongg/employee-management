@@ -1,51 +1,56 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { PageResponse } from '@/models/page/pageResponse';
 import provinceService from '@/services/province/provinceService';
-import { CountryResponse } from '@/models/country/countryResponse';
 import countryService from '@/services/country/countryService';
-import OptionSelect from '@/components/item/optionSelect';
-import { useForm } from 'react-hook-form';
+import { CountryResponse } from '@/models/country/countryResponse';
+import dynamic from 'next/dynamic';
+
+const ReactSelect = dynamic(() => import('react-select'), { ssr: false });
+
+
+import Pagination from '@/components/pagination/pagination';
+import ProvinceFormModal from '@/components/province/provinceFormModal';
+import ConfirmationDialog from '@/components/dialog/confirmDialog';
 
 export default function ProvincePage() {
   const [provinces, setProvinces] = useState<ProvinceResponse[]>([]);
   const [countries, setCountries] = useState<CountryResponse[]>([]);
-  const { register, handleSubmit, formState: { errors },reset  } = useForm<ProvinceCreateRequest>();
+  const [countryId, setCountryId] = useState<number | undefined>(undefined);
 
-  
+
   const [pageIndex, setPageIndex] = useState(0);
-  const pageSize = 10;
   const [keyword, setKeyword] = useState('');
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
 
   const [open, setOpen] = useState(false);
+  const [selected, setSelected] = useState<ProvinceResponse | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
 
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchCountries = useCallback(async () => {
-      setLoading(true);
-      try {
-        const res: CountryResponse[] =
-          await countryService.getCountries();
-          setCountries(res)
-  
-      } catch (err) {
-        console.error(err);
-      }
-    }, []);
-  
+    try {
+      const res = await countryService.getCountries();
+      setCountries(res);
+    } catch (err) {
+      console.error(err);
+    }
+  }, []);
 
-    useEffect(()=>{
-        fetchCountries();
-    },[])
+  useEffect(() => {
+    fetchCountries();
 
+  }, []);
+
+  // fetch provinces
   const fetchProvinces = useCallback(async () => {
     setLoading(true);
     try {
       const res: PageResponse<ProvinceResponse> =
-        await provinceService.getProvinces();
+        await provinceService.getProvinces(pageIndex, keyword, countryId);
 
       setProvinces(res.content);
       setTotalPages(res.totalPages);
@@ -54,40 +59,20 @@ export default function ProvincePage() {
     } finally {
       setLoading(false);
     }
-  }, [pageIndex, keyword]);
+  }, [pageIndex, keyword, countryId]);
 
   useEffect(() => {
     fetchProvinces();
-  }, [pageIndex]);
-
-  useEffect(() => {
-    const timeout = setTimeout(() => {
-      fetchProvinces();
-    }, 500);
-
-    return () => clearTimeout(timeout);
-  }, [keyword]);
-
-  const handleCreate = async (province:ProvinceCreateRequest) => {
-
-    try {
-      await provinceService.createProvince(province);
-      setOpen(false);
-      fetchProvinces();
-      reset()
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  }, [fetchProvinces]);
 
   // delete
   const handleDelete = async (id: number) => {
-    // try {
-    //   await provinceService.deleteProvince(id);
-    //   fetchProvinces();
-    // } catch (err) {
-    //   console.error(err);
-    // }
+    try {
+      const res = await provinceService.deleteProvince(id);
+      fetchProvinces();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   return (
@@ -101,32 +86,71 @@ export default function ProvincePage() {
 
         <button
           onClick={() => setOpen(true)}
-          className="bg-black text-white px-4 py-2 rounded-xl"
+          className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-80"
         >
           + Add
         </button>
       </div>
 
-      {/* Search */}
-      <input
-        value={keyword}
-        onChange={(e) => {
-          setPageIndex(0);
-          setKeyword(e.target.value);
-        }}
-        placeholder="Search..."
-        className="w-full border px-4 py-2 rounded-xl"
-      />
+      {/* Search (debounce) */}
+      <div className="flex gap-4">
+        {/* Search */}
+        <input
+          onChange={(e) => {
+            const value = e.target.value;
+
+            if (searchTimeoutRef.current) {
+              clearTimeout(searchTimeoutRef.current);
+            }
+
+            searchTimeoutRef.current = setTimeout(() => {
+              setKeyword(value);
+              setPageIndex(0);
+            }, 500);
+          }}
+          placeholder="Search..."
+          className="flex-1 border px-4 py-2 rounded-xl"
+        />
+
+        {/* Filter country */}
+        <select
+          value={countryId ?? ''}
+          onChange={(e) => {
+            const value = e.target.value;
+            setCountryId(value === '' ? undefined : Number(value));
+            setPageIndex(0);
+          }}
+          className="border px-4 py-2 rounded-xl"
+        >
+          <option value="">All countries</option>
+          {countries.map((c) => (
+            <option key={c.id} value={c.id}>
+              {c.name}
+            </option>
+          ))}
+        </select>
+
+        <ReactSelect
+          options={countries.map(c => ({ value: c.id, label: c.name }))}
+          value={countries.find(c => c.id === countryId) ? { value: countryId, label: countries.find(c => c.id === countryId)?.name } : null}
+          onChange={(selectedOption) => {
+            setCountryId(selectedOption ? selectedOption.value : undefined);
+            setPageIndex(0);
+          }}
+          isClearable
+          placeholder="Select country..."
+        />
+      </div>
 
       {/* Table */}
       <div className="bg-white rounded-2xl shadow overflow-hidden">
         <table className="w-full">
-          <thead className="bg-gray-100">
+          <thead className="bg-gray-100 text-left text-sm">
             <tr>
-              <th className="p-4 text-left">ID</th>
-              <th className="p-4 text-left">Name</th>
-              <th className="p-4 text-left">CountryId</th>
-              <th className="p-4 text-left">Type</th>
+              <th className="p-4">ID</th>
+              <th className="p-4">Name</th>
+              <th className="p-4">Country</th>
+              <th className="p-4">Type</th>
               <th className="p-4 text-right">Actions</th>
             </tr>
           </thead>
@@ -134,7 +158,7 @@ export default function ProvincePage() {
           <tbody>
             {loading ? (
               <tr>
-                <td colSpan={5} className="p-6 text-center">
+                <td colSpan={5} className="p-6 text-center text-gray-500">
                   Loading...
                 </td>
               </tr>
@@ -146,22 +170,28 @@ export default function ProvincePage() {
               </tr>
             ) : (
               provinces.map((p) => (
-                <tr key={p.id} className="border-t">
+                <tr key={p.id} className="border-t hover:bg-gray-50">
                   <td className="p-4">{p.id}</td>
-                  <td className="p-4">{p.name}</td>
-                  <td className="p-4">{p.countryId}</td>
+                  <td className="p-4 font-medium">{p.name}</td>
+                  <td className="p-4">{p.countryName}</td>
                   <td className="p-4">{p.type}</td>
 
                   <td className="p-4 text-right space-x-2">
-                    <button className="p-2 hover:bg-gray-100 rounded-lg">
-                      <Pencil size={18} />
+                    <button
+                      onClick={() => {
+                        setSelected(p);
+                        setOpen(true);
+                      }}
+                      className="px-3 py-1 border rounded-lg hover:bg-gray-100"
+                    >
+                      Edit
                     </button>
 
                     <button
-                      onClick={() => handleDelete(p.id)}
-                      className="p-2 hover:bg-red-100 text-red-500 rounded-lg"
+                      onClick={() => setDeleteId(p.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
                     >
-                      <Trash2 size={18} />
+                      Delete
                     </button>
                   </td>
                 </tr>
@@ -172,78 +202,54 @@ export default function ProvincePage() {
       </div>
 
       {/* Pagination */}
-      <div className="flex justify-between">
-        <button
-          disabled={pageIndex === 0}
-          onClick={() => setPageIndex((p) => p - 1)}
-          className="px-4 py-2 border rounded-xl"
-        >
-          Prev
-        </button>
+      <Pagination
+        pageIndex={pageIndex}
+        totalPages={totalPages}
+        onPrev={() => setPageIndex((prev) => prev - 1)}
+        onNext={() => setPageIndex((prev) => prev + 1)}
+      />
 
-        <span>
-          {pageIndex + 1} / {totalPages}
-        </span>
+      <ProvinceFormModal
+        open={open}
+        countries={countries}
+        onClose={() => {
+          setOpen(false);
+          setSelected(null);
+        }}
+        onSubmit={async (province: ProvinceCreateRequest) => {
+          if (selected) {
+            await provinceService.updateProvince(selected.id, province);
+          } else {
+            await provinceService.createProvince(province);
+          }
 
-        <button
-          disabled={pageIndex + 1 >= totalPages}
-          onClick={() => setPageIndex((p) => p + 1)}
-          className="px-4 py-2 border rounded-xl"
-        >
-          Next
-        </button>
-      </div>
+          setOpen(false);
+          setSelected(null);
+          fetchProvinces();
+        }}
+        defaultValues={
+          selected
+            ? selected
+            : undefined
+        }
+      />
 
-      {/* Modal */}
-      {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-          <div className="bg-white p-6 rounded-2xl w-[400px] space-y-4">
-            <h2 className="text-xl font-semibold">Create Province</h2>
-
-            <input
-  {...register('name', { required: true })}
-  placeholder="Province name"
-  className="w-full border px-4 py-2 rounded-xl"
-/>
-
-            {/* <input
-              type="number"
-              value={countryId ?? ''}
-              onChange={(e) => setCountryId(Number(e.target.value))}
-              placeholder="Country ID"
-              className="w-full border px-4 py-2 rounded-xl"
-            /> */}
-            <OptionSelect
-            register={register}
-            labelText='country'
-            fieldName='countryId'
-            options={countries}
-
-            ></OptionSelect>
-
-            <input
-  {...register('type')}
-  placeholder="Type"
-  className="w-full border px-4 py-2 rounded-xl"
-/>
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 border rounded-xl"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleSubmit(handleCreate)}
-                className="bg-black text-white px-4 py-2 rounded-xl"
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Confirm delete */}
+      <ConfirmationDialog
+        isShow={deleteId !== null}
+        title="Confirm delete"
+        okText="Delete"
+        cancelText="Cancel"
+        ok={async () => {
+          if (deleteId !== null) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        cancel={() => setDeleteId(null)}
+      >
+        <p>Bạn có chắc muốn xoá không?</p>
+      </ConfirmationDialog>
     </div>
   );
 }

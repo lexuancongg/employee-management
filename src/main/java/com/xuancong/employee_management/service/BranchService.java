@@ -10,6 +10,7 @@ import com.xuancong.employee_management.exception.ResourceInUseException;
 import com.xuancong.employee_management.model.Address;
 import com.xuancong.employee_management.model.Branch;
 import com.xuancong.employee_management.repository.*;
+import com.xuancong.employee_management.specification.BranchSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -98,9 +99,10 @@ public class BranchService {
 
     }
 
-    public PageResponse<BranchResponse> getBranchs(int pageIndex,int pageSize,String name){
+    public PageResponse<BranchResponse> getBranchs(int pageIndex,int pageSize,String name,Long countryId,Long provinceId){
         Pageable pageable = PageRequest.of(pageIndex, pageSize);
-        Page<Branch> branchPage = branchRepository.findAll(pageable);
+        Page<Branch> branchPage = branchRepository.findAll(
+                BranchSpecification.getBranchFilter(name,countryId,provinceId),pageable);
 
         List<BranchResponse> payload = branchPage.getContent()
                 .stream()

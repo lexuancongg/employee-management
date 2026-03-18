@@ -12,22 +12,22 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/branchs")
+@RequestMapping("/api")
 public class BranchController {
     private final BranchService branchService;
 
-    @PostMapping()
+    @PostMapping("/management/branchs")
     public ResponseEntity<BranchResponse> create(@Valid @RequestBody BranchCreateRequest branchCreateRequest){
         return ResponseEntity.ok(branchService.create(branchCreateRequest));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/management/branchs/{id}")
     public ResponseEntity<BranchResponse> delete(@PathVariable Long id){
         branchService.delete(id);
         return ResponseEntity.ok().build();
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/management/branchs/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
                                        @Valid @RequestBody BranchCreateRequest branchCreateRequest){
         branchService.update(id, branchCreateRequest);
@@ -36,15 +36,18 @@ public class BranchController {
     }
 
 
-    @GetMapping()
+    @GetMapping("/management/branchs")
     public ResponseEntity<PageResponse<BranchResponse>> getBranchs(
             @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,
             @RequestParam(name = "pageSize", defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false) int pageSize,
-            @RequestParam(name = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false) int pageIndex
+            @RequestParam(name = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false) int pageIndex,
+            @RequestParam(value = "countryId",required = false) final Long countryId,
+            @RequestParam(name = "provinceId",required = false) final Long provinceId
 
-    ){
+
+            ){
         return ResponseEntity.ok(
-                branchService.getBranchs(pageIndex,pageSize,keyword)
+                branchService.getBranchs(pageIndex,pageSize,keyword,countryId,provinceId)
         );
     }
 
