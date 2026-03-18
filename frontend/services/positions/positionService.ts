@@ -1,19 +1,18 @@
-import { LoginResponse } from "@/models/auth/loginResponse";
-import { AuthRequest } from "@/models/auth/authRequest";
 import apiClient from "@/utils/api/apiClient";
 import { PageResponse } from "@/models/page/pageResponse";
 import { PositionResponse } from "@/models/positions/positionResponse";
 import { PositionCreateRequest } from "@/models/positions/positionCreateRequest";
-import { json } from "stream/consumers";
 
 class positionService {
-    private baseUrl: string
+    private managementUrl: string;
+    private employeeUrl : string;
     constructor() {
-        this.baseUrl = "http://localhost:8080/api/positions"
+        this.employeeUrl = "http://localhost:8080/api/employee/positions";
+        this.managementUrl = "http://localhost:8080/api/management/positions";
     }
 
-    public async getPositions(): Promise<PageResponse<PositionResponse>> {
-        const response = await apiClient.get(this.baseUrl);
+    public async getPositions(pageIndex:number,keyword:string): Promise<PageResponse<PositionResponse>> {
+        const response = await apiClient.get(`${this.managementUrl}?pageIndex=${pageIndex}&keyword=${keyword}`);
         if (response.ok) {
             return await response.json();
         }
@@ -23,7 +22,7 @@ class positionService {
     }
 
     public async createPosition(position: PositionCreateRequest): Promise<PositionResponse> {
-        const response = await apiClient.post(this.baseUrl, JSON.stringify(position));
+        const response = await apiClient.post(this.managementUrl, JSON.stringify(position));
         if (response.ok) {
             return await response.json();
         }
@@ -31,7 +30,16 @@ class positionService {
 
     }
     public async deletePosition(id: number): Promise<Response> {
-        return await apiClient.delete(this.baseUrl + `/${id}`);
+        return await apiClient.delete(this.managementUrl + `/${id}`);
+    }
+
+    public async updatePosition(id:number,position:PositionCreateRequest):Promise<void>{
+        const response = await apiClient.put(`${this.managementUrl}/${id}`,JSON.stringify(position))
+        if(!response.ok){
+        throw response;
+
+        }
+
     }
 
 }

@@ -14,17 +14,17 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
-public class PositionController {
+public class PositionController {   
     private final PositionService positionService;
 
-    @PostMapping("/positions")
+    @PostMapping("/management/positions")
     public ResponseEntity<PositionResponse> createPosition(@Valid @RequestBody PositionCreateRequest positionCreateRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(positionService.createPosition(positionCreateRequest));
     }
 
-    @GetMapping("/positions")
+    @GetMapping("/management/positions")
     public ResponseEntity<PageResponse<PositionResponse>> getPositions(
             @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,
             @RequestParam(name = "pageSize", defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE,required = false) int pageSize,
@@ -38,14 +38,14 @@ public class PositionController {
     }
 
 
-    @GetMapping("/positions/{id}")
+    @GetMapping("management/positions/{id}")
     public ResponseEntity<PositionResponse> getPosition(@PathVariable long id) {
         return ResponseEntity.ok(positionService.getPositionById(id));
     }
 
 
 
-    @PutMapping("/positions/{id}")
+    @PutMapping("management/positions/{id}")
     public ResponseEntity<Void> updatePosition(@PathVariable long id,
                                                @RequestBody PositionCreateRequest positionCreateRequest) {
         positionService.updatePosition(id, positionCreateRequest);
@@ -53,7 +53,7 @@ public class PositionController {
     }
 
 
-    @DeleteMapping("/positions/{id}")
+    @DeleteMapping("management/positions/{id}")
     public ResponseEntity<Void> deletePosition(@PathVariable long id) {
         positionService.deletePosition(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();

@@ -32,8 +32,8 @@ export default function Sidebar() {
                     Countries
                 </Link>
 
-                <Link href="/attendance" className="px-6 py-3 hover:bg-slate-700">
-                    Time & Attendance
+                <Link href="/dashboard/address/provinces" className="px-6 py-3 hover:bg-slate-700">
+                    Provinces
                 </Link>
 
                 <Link href="/payroll" className="px-6 py-3 hover:bg-slate-700">

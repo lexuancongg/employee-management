@@ -5,6 +5,7 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { PageResponse } from '@/models/page/pageResponse';
 import { CountryCreateRequest, CountryResponse } from '@/models/country/countryResponse';
 import countryService from '@/services/country/countryService';
+import { useForm } from 'react-hook-form';
 
 export default function CountryPage() {
   const [countries, setCountries] = useState<CountryResponse[]>([]);
@@ -21,7 +22,7 @@ export default function CountryPage() {
     setLoading(true);
     try {
       const res: PageResponse<CountryResponse> =
-        await countryService.getCountries();
+        await countryService.getCountriesPaging();
 
       setCountries(res.content);
       setTotalPages(res.totalPages);

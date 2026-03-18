@@ -1,29 +1,31 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import positionService from '@/services/positions/positionService';
 import { PositionResponse } from '@/models/positions/positionResponse';
 import { PageResponse } from '@/models/page/pageResponse';
 import { PositionCreateRequest } from '@/models/positions/positionCreateRequest';
+import Pagination from '@/components/pagination/pagination';
+import PositionFormModal from '@/components/position/PositionFormModal';
+import ConfirmationDialog from '@/components/dialog/confirmDialog';
 
 
 export default function PositionsPage() {
   const [positions, setPositions] = useState<PositionResponse[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
-  const pageSize = 10;
   const [keyword, setKeyword] = useState('');
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
-
   const [open, setOpen] = useState(false);
-  const [name, setName] = useState('');
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [selected, setSelected] = useState<PositionResponse | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
+
 
   const fetchPositions = useCallback(async () => {
     setLoading(true);
     try {
-      const res: PageResponse<PositionResponse> =
-        await positionService.getPositions();
-
+      const res: PageResponse<PositionResponse> = await positionService.getPositions(pageIndex, keyword);
       setPositions(res.content);
       setTotalPages(res.totalPages);
     } catch (err) {
@@ -39,23 +41,6 @@ export default function PositionsPage() {
 
 
 
-  const handleCreate = async () => {
-    if (!name.trim()) return;
-
-    const position: PositionCreateRequest = {
-      name: name
-    }
-
-    try {
-      await positionService.createPosition(position);
-      setOpen(false);
-      setName('');
-      fetchPositions();
-    } catch (e) {
-      console.error(e);
-    }
-  };
-
 
   const handleDelete = async (id: number) => {
     positionService.deletePosition(id)
@@ -64,7 +49,7 @@ export default function PositionsPage() {
           fetchPositions();
         }
       })
-      .catch((err)=>{
+      .catch((err) => {
         console.log(err)
       })
   }
@@ -84,12 +69,23 @@ export default function PositionsPage() {
         </button>
       </div>
 
-      {/* Search */}
+
+
+
       <input
-        value={keyword}
         onChange={(e) => {
-          setPageIndex(0);
-          setKeyword(e.target.value);
+          const value = e.target.value;
+          if (searchTimeoutRef.current) {
+            clearTimeout(searchTimeoutRef.current)
+          }
+          searchTimeoutRef.current = setTimeout(
+            () => {
+              setKeyword(value)
+              setPageIndex(0)
+            }, 500
+          )
+
+
         }}
         placeholder="Search..."
         className="w-full border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
@@ -125,12 +121,18 @@ export default function PositionsPage() {
                   <td className="p-4 font-medium">{p.name}</td>
                   <td className="p-4 text-right space-x-2">
                     <button
-                      className="px-3 py-1 border rounded-lg hover:bg-gray-100">
+                      onClick={() => {
+                        setSelected(p);
+                        setOpen(true);
+                      }}
+                      className="px-3 py-1 border rounded-lg hover:bg-gray-100"
+                    >
                       Edit
                     </button>
                     <button
-                      onClick={() => handleDelete(p.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">
+                      onClick={() => setDeleteId(p.id)}
+                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                    >
                       Delete
                     </button>
                   </td>
@@ -141,60 +143,51 @@ export default function PositionsPage() {
         </table>
       </div>
 
-      {/* Pagination */}
-      <div className="flex justify-between items-center">
-        <button
-          disabled={pageIndex === 0}
-          onClick={() => setPageIndex((prev) => prev - 1)}
-          className="px-4 py-2 border rounded-xl disabled:opacity-50"
-        >
-          Prev
-        </button>
+      <Pagination
+        pageIndex={pageIndex}
+        totalPages={totalPages}
+        onPrev={() => setPageIndex((prev) => prev - 1)}
+        onNext={() => setPageIndex((prev) => prev + 1)}
+      />
 
-        <span className="text-sm text-gray-600">
-          Page {pageIndex + 1} / {totalPages}
-        </span>
 
-        <button
-          disabled={pageIndex + 1 >= totalPages}
-          onClick={() => setPageIndex((prev) => prev + 1)}
-          className="px-4 py-2 border rounded-xl disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
 
-      {/* Modal Create */}
-      {open && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white w-[400px] rounded-2xl p-6 space-y-4 shadow-lg">
-            <h2 className="text-xl font-semibold">Create Position</h2>
 
-            <input
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Enter position name..."
-              className="w-full border px-4 py-2 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
-            />
+      <PositionFormModal
+        open={open}
+        onClose={() => {
+          setOpen(false);
+          setSelected(null);
+        }}
+        onSubmit={async (position: PositionCreateRequest) => {
+          if (selected) {
+            await positionService.updatePosition(selected.id, position);
+          } else {
+            await positionService.createPosition(position);
+          }
+          setOpen(false);
+          setSelected(null);
+          fetchPositions();
+        }}
+        defaultValues={selected ? { name: selected.name } : undefined}
+      />
 
-            <div className="flex justify-end gap-2">
-              <button
-                onClick={() => setOpen(false)}
-                className="px-4 py-2 border rounded-xl"
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={handleCreate}
-                className="bg-black text-white px-4 py-2 rounded-xl"
-              >
-                Create
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      
+      <ConfirmationDialog
+        isShow={deleteId !== null}
+        title="Confirm delete"
+        okText="Delete"
+        cancelText="Cancel"
+        ok={async () => {
+          if (deleteId !== null) {
+            await handleDelete(deleteId);
+            setDeleteId(null);
+          }
+        }}
+        cancel={() => setDeleteId(null)}
+      >
+        <p>Bạn có chắc muốn xoá không?</p>
+      </ConfirmationDialog>
     </div>
   );
 }

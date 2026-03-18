@@ -8,7 +8,7 @@ class CountryService{
         this.baseUrl = "http://localhost:8080/api/countries"
     }
 
-    public async getCountries():Promise<PageResponse<CountryResponse>>{
+    public async getCountriesPaging():Promise<PageResponse<CountryResponse>>{
         const response = await apiClient.get(this.baseUrl);
         if(response.ok){
             return await response.json();
@@ -26,6 +26,14 @@ class CountryService{
         throw response;
 
 
+    }
+
+    public async getCountries():Promise<CountryResponse[]>{
+          const response = await apiClient.get("http://localhost:8080/api/management/countries");
+          if(response.ok){
+            return await response.json();
+        }
+        throw response;
     }
 
    

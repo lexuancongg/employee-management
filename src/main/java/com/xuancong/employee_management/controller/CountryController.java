@@ -36,7 +36,7 @@ public class CountryController {
 
 
     // checked
-    @GetMapping({"/management/countries","/customer/countries"})
+    @GetMapping({"/management/countries","/countries"})
     public ResponseEntity<List<CountryResponse>> getCountries(){
         return ResponseEntity.ok(countryService.getCountries());
     }

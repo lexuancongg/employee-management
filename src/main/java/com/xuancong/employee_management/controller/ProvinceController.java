@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 public class ProvinceController {
     private final ProvinceService provinceService;
     public ProvinceController(ProvinceService provinceService) {
@@ -21,7 +22,7 @@ public class ProvinceController {
     }
 
 
-    @GetMapping("/management/provinces/paging")
+    @GetMapping("/provinces")
     public ResponseEntity<PageResponse<ProvinceResponse>> getProvincesPaging(
             @RequestParam(value = "pageIndex",defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
             final int pageIndex,
