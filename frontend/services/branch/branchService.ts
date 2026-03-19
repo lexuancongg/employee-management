@@ -6,9 +6,11 @@ import { BranchCreateRequest, BranchResponse } from "@/models/branch/branchRespo
 import { promises } from "dns";
 
 class BranchService {
-    private managementUrl: string
+    private managementUrl: string;
+    private employeeUrl:string;
     constructor() {
         this.managementUrl = "http://localhost:8080/api/management/branchs"
+        this.employeeUrl =  "http://localhost:8080/api/employee/branchs"
     }
 
     public async getBranches(pageIndex: number, keyword: string, countryId?: number, provinceId?: number): Promise<PageResponse<BranchResponse>> {
@@ -48,6 +50,15 @@ class BranchService {
         if(!response.ok){
             throw response;
         }
+    }
+
+
+    public async getAllBranch():Promise<BranchResponse[]>{
+        const response = await apiClient.get(this.employeeUrl);
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
     }
 
 

@@ -9,4 +9,8 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 
     Page<Department> findByNameContainingIgnoreCase(String name, Pageable pageable);
+
+    boolean existsByNameIgnoreCaseAndBranch_IdAndIdNot(String name, Long branchId, Long id);
+
+    Page<Department> findByNameContainingIgnoreCaseAndBranch_Id(String name, Long branchId,Pageable pageable);
 }

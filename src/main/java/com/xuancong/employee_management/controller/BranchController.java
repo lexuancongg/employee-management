@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -48,6 +50,13 @@ public class BranchController {
             ){
         return ResponseEntity.ok(
                 branchService.getBranchs(pageIndex,pageSize,keyword,countryId,provinceId)
+        );
+    }
+
+    @GetMapping("/employee/branchs")
+    public ResponseEntity<List<BranchResponse>> getAllBranches(){
+        return  ResponseEntity.ok(
+                branchService.getAllBranches()
         );
     }
 

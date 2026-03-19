@@ -29,7 +29,6 @@ const dashboardData: DashboardResponse = {
     }
 };
 
-// ==================== DỮ LIỆU ĐỘNG CHO BIỂU ĐỒ ====================
 const pieData = dashboardData.charts.employeesByDepartment.map((dept, index) => ({
     name: dept.departmentName,
     value: dept.employeeCount,

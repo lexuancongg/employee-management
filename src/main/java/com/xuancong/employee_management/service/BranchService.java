@@ -120,4 +120,13 @@ public class BranchService {
 
 
     }
+
+
+    public List<BranchResponse> getAllBranches(){
+        List<Branch> branchList = branchRepository.findAll();
+        return  branchList.stream()
+                .map(BranchResponse::fromBranch)
+                .toList();
+
+    }
 }

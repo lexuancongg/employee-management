@@ -39,6 +39,9 @@ export default function Sidebar() {
                 <Link href="/dashboard/address/districts" className="px-6 py-3 hover:bg-slate-700">
                     Districts
                 </Link>
+                 <Link href="/dashboard/departments" className="px-6 py-3 hover:bg-slate-700">
+                    Departments
+                </Link>
 
             </nav>
         </aside>

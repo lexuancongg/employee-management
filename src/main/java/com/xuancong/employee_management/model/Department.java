@@ -16,7 +16,9 @@ public class Department extends BaseAuditEntity {
     private Long id;
     private String name;
     private String description;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "branch_id")
+    private Branch branch;
 
 
 }

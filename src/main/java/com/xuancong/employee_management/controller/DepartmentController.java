@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
-        @PostMapping("/departments")
+        @PostMapping("/management/departments")
     public ResponseEntity<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentCreateRequest departmentCreateRequest) {
         return ResponseEntity.ok(
                 this.departmentService.createDepartment(departmentCreateRequest)
@@ -39,14 +39,15 @@ public class DepartmentController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/departments")
+    @GetMapping("/management/departments")
     public ResponseEntity<PageResponse<DepartmentResponse>> getDepartments(
             @RequestParam(name = "pageIndex",required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
             @RequestParam(name = "pageSize", required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(name = "name",required = false,defaultValue = "") String name
+            @RequestParam(name = "name",required = false,defaultValue = "") String name,
+            @RequestParam(name = "branchId",required = false) final  Long branchId
     ) {
         return ResponseEntity
-                .ok(this.departmentService.getDepartments(pageIndex,pageSize,name));
+                .ok(this.departmentService.getDepartments(pageIndex,pageSize,name,branchId));
     }
 
 
