@@ -2,7 +2,8 @@ import { LoginResponse } from "@/models/auth/loginResponse";
 import { AuthRequest } from "@/models/auth/authRequest";
 import apiClient from "@/utils/api/apiClient";
 import { PageResponse } from "@/models/page/pageResponse";
-import { BranchResponse } from "@/models/branch/branchResponse";
+import { BranchCreateRequest, BranchResponse } from "@/models/branch/branchResponse";
+import { promises } from "dns";
 
 class BranchService {
     private managementUrl: string
@@ -25,6 +26,29 @@ class BranchService {
 
     }
 
+    public async createBranch(branch:BranchCreateRequest):Promise<void>{
+        const response = await apiClient.post(this.managementUrl,JSON.stringify(branch))
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
+    }
+
+
+    public async updateBranch(branch:BranchCreateRequest,id:number):Promise<void>{
+        const response = await apiClient.put(`${this.managementUrl}/${id}`,JSON.stringify(branch))
+        if(!response.ok){
+            throw response;
+        }
+    }
+
+
+    public async deleteBranch(id:number):Promise<void>{
+        const response = await apiClient.delete(`${this.managementUrl}/${id}`);
+        if(!response.ok){
+            throw response;
+        }
+    }
 
 
 }

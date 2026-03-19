@@ -1,4 +1,9 @@
 package com.xuancong.employee_management.dto.district;
 
-public record DistrictCreateRequest() {
-}
+import lombok.Builder;
+
+@Builder
+public record DistrictCreateRequest(
+        String name,
+        Long provinceId
+) {}

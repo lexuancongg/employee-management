@@ -31,12 +31,14 @@ public class BranchService {
     private final ProvinceRepository provinceRepository;
     private final DistrictRepository districtRepository;
     private final EmployeeRepository employeeRepository;
+    private final AddressRepository addressRepository;
 
     public BranchResponse create(BranchCreateRequest branchCreateRequest){
         Branch branch = new Branch();
         branch.setName(branchCreateRequest.name());
         Address address = new Address();
         this.setAddress(address,branchCreateRequest.address());
+
         branch.setAddress(address);
         branchRepository.save(branch);
         return BranchResponse.fromBranch(branch);
@@ -84,6 +86,7 @@ public class BranchService {
         );
 
         address.setSpecificAddress(req.specificAddress());
+        addressRepository.save(address);
     }
 
 

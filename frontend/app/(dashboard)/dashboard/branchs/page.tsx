@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { Pencil, Trash2 } from 'lucide-react';
-import { BranchField, BranchResponse } from '@/models/branch/branchResponse';
+import { BranchCreateRequest, BranchField, BranchResponse } from '@/models/branch/branchResponse';
 import { PageResponse } from '@/models/page/pageResponse';
 import branchService from '@/services/branch/branchService';
 import countryService from '@/services/country/countryService';
@@ -88,7 +88,7 @@ export default function BranchPage() {
   // delete
   const handleDelete = async (id: number) => {
     try {
-      // await branchService.deleteBranch(id);
+      await branchService.deleteBranch(id);
       fetchBranches();
     } catch (err) {
       console.error(err);
@@ -186,7 +186,11 @@ export default function BranchPage() {
                 <tr key={b.id} className="border-t hover:bg-gray-50">
                   <td className="p-4">{b.id}</td>
                   <td className="p-4">{b.name}</td>
-                  <td className="p-4">{b.address?.specificAddress}</td>
+                  <td className="p-4">
+                    {b.address
+                      ? `${b.address.specificAddress} - ${b.address.districtName} - ${b.address.provinceName} - ${b.address.countryName}`
+                      : ''}
+                  </td>
                   <td className="p-4 text-right space-x-2">
                     <button
                       onClick={() => {
@@ -228,20 +232,31 @@ export default function BranchPage() {
             setSelectedBranch(null)
           }
         }
-        countries={countries}
-        provinces={provinces}
-        onSubmit={async(branch:BranchField)=>{
-          if(selectedBranch){
-
-          }else{
-
+        onSubmit={async (branchField: BranchField) => {
+          const branch: BranchCreateRequest = {
+            name: branchField.name,
+            address: {
+              ...branchField,
+            }
           }
-        } }
+          if (selectedBranch) {
+            await branchService.updateBranch(branch, selectedBranch.id)
+            setOpen(false)
+            setSelectedBranch(null)
+            fetchBranches();
+
+          } else {
+
+            await branchService.createBranch(branch)
+            setOpen(false)
+            setSelectedBranch(null)
+            fetchBranches();
+          }
+        }}
 
       ></BranchFormModal>
 
 
-      {/* Confirm delete */}
       <ConfirmationDialog
         isShow={deleteId !== null}
         title="Confirm delete"
