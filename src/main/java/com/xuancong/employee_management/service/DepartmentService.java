@@ -12,6 +12,7 @@ import com.xuancong.employee_management.model.Department;
 import com.xuancong.employee_management.repository.BranchRepository;
 import com.xuancong.employee_management.repository.DepartmentRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
+import com.xuancong.employee_management.specification.DepartmentSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -55,6 +56,7 @@ public class DepartmentService {
         return this.departmentRepository.existsByNameIgnoreCaseAndBranch_IdAndIdNot(name, branchId, id);
     }
 
+    @CacheEvict(value = "departments", allEntries = true)
     public void updateDepartment(Long id, DepartmentCreateRequest departmentCreateRequest) {
         Long branchId = departmentCreateRequest.branchId();
         Branch branch = branchRepository.findById(branchId)
@@ -87,12 +89,16 @@ public class DepartmentService {
 
     @Cacheable(
             value = "departments",
-            key = "#page + ':' + #size + ':' + #name"
+            key = "#page + ':' + #branchId + ':' + #name"
     )
     public PageResponse<DepartmentResponse> getDepartments(int page, int size, String name,Long branchId) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<Department> departmentPage = departmentRepository.findByNameContainingIgnoreCaseAndBranch_Id(name,branchId,pageable);
-        List<DepartmentResponse> content = departmentPage.getContent().stream().map(DepartmentResponse::fromDepartment)
+        Page<Department> departmentPage = departmentRepository.findAll(
+                DepartmentSpecification.getDepartmentFilter(name,branchId),pageable
+        );
+        List<DepartmentResponse> content = departmentPage.getContent()
+                .stream()
+                .map(DepartmentResponse::fromDepartment)
                 .toList();
         return new PageResponse<DepartmentResponse>(
                 content,

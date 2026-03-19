@@ -23,7 +23,7 @@ public class DepartmentController {
         );
 
     }
-    @PutMapping("/departments/{id}")
+    @PutMapping("/management/departments/{id}")
     public ResponseEntity<Void> updateDepartment(
             @PathVariable Long id,
             @Valid @RequestBody DepartmentCreateRequest departmentCreateRequest
@@ -33,7 +33,7 @@ public class DepartmentController {
     }
 
 
-    @DeleteMapping("/departments/{id}")
+    @DeleteMapping("/management/departments/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
         this.departmentService.delete(id);
         return ResponseEntity.noContent().build();
@@ -43,11 +43,11 @@ public class DepartmentController {
     public ResponseEntity<PageResponse<DepartmentResponse>> getDepartments(
             @RequestParam(name = "pageIndex",required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
             @RequestParam(name = "pageSize", required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(name = "name",required = false,defaultValue = "") String name,
+            @RequestParam(name = "keyword",required = false,defaultValue = "") String keyword,
             @RequestParam(name = "branchId",required = false) final  Long branchId
     ) {
         return ResponseEntity
-                .ok(this.departmentService.getDepartments(pageIndex,pageSize,name,branchId));
+                .ok(this.departmentService.getDepartments(pageIndex,pageSize,keyword,branchId));
     }
 
 

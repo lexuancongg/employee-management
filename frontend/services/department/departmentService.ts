@@ -1,4 +1,4 @@
-import { DepartmentResponse } from "@/models/department/department";
+import { DepartmentCreateRequest, DepartmentResponse } from "@/models/department/department";
 import { PageResponse } from "@/models/page/pageResponse";
 import apiClient from "@/utils/api/apiClient";
 
@@ -20,6 +20,28 @@ class DepartmentService {
             return await response.json();
         }
         throw response;
+    }
+
+    public async createDepartment(department:DepartmentCreateRequest):Promise<DepartmentResponse>{
+        const response = await apiClient.post(this.managementUrl,JSON.stringify(department))
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
+    }
+
+    public async updateDepartment(id:number,department:DepartmentCreateRequest):Promise<void>{
+        const response  =  await apiClient.put(`${this.managementUrl}/${id}`,JSON.stringify(department));
+        if(!response.ok){
+            throw response;
+        }
+    }
+
+    public async deleteDepartment(id:number):Promise<void>{
+        const response = await apiClient.delete(`${this.managementUrl}/${id}`);
+        if(!response.ok){
+            throw response;
+        }
     }
 }
 

@@ -5,17 +5,16 @@ import { PageResponse } from '@/models/page/pageResponse';
 import Pagination from '@/components/pagination/pagination';
 import ConfirmationDialog from '@/components/dialog/confirmDialog';
 import branchService from '@/services/branch/branchService';
-import { DepartmentResponse } from '@/models/department/department';
+import { DepartmentCreateRequest, DepartmentResponse } from '@/models/department/department';
 import departmentService from '@/services/department/departmentService';
+import DepartmentFormModal from '@/components/department/departmentFormModal';
+import { BranchResponse } from '@/models/branch/branchResponse';
 
-type Option = {
-  id: number;
-  name: string;
-};
+
 
 export default function DepartmentsPage() {
   const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
-  const [branches, setBranches] = useState<Option[]>([]);
+  const [branches, setBranches] = useState<BranchResponse[]>([]);
   const [selectedBranch, setSelectedBranch] = useState<number | undefined>(undefined);
 
   const [pageIndex, setPageIndex] = useState(0);
@@ -45,6 +44,8 @@ export default function DepartmentsPage() {
     }
   }, [pageIndex, keyword, selectedBranch]);
 
+
+
   useEffect(() => {
     fetchDepartments();
   }, [fetchDepartments]);
@@ -64,8 +65,8 @@ export default function DepartmentsPage() {
 
   const handleDelete = async (id: number) => {
     try {
-    //   const res = await departmentService.deleteDepartment(id);
-    //   if (res.ok) fetchDepartments();
+      const res = await departmentService.deleteDepartment(id);
+      fetchDepartments();
     } catch (err) {
       console.error(err);
     }
@@ -87,9 +88,7 @@ export default function DepartmentsPage() {
         </button>
       </div>
 
-      {/* Filter */}
       <div className="flex gap-4">
-        {/* search */}
         <input
           placeholder="Search..."
           className="w-full border rounded-xl px-4 py-2"
@@ -104,7 +103,6 @@ export default function DepartmentsPage() {
           }}
         />
 
-        {/* branch dropdown */}
         <select
           value={selectedBranch ?? ''}
           onChange={(e) => {
@@ -122,7 +120,6 @@ export default function DepartmentsPage() {
         </select>
       </div>
 
-      {/* Table */}
       <div className="bg-white rounded-2xl shadow overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-100 text-sm">
@@ -187,8 +184,7 @@ export default function DepartmentsPage() {
         onNext={() => setPageIndex((prev) => prev + 1)}
       />
 
-      {/* Modal */}
-      {/* <DepartmentFormModal
+      <DepartmentFormModal
         open={open}
         onClose={() => {
           setOpen(false);
@@ -206,12 +202,11 @@ export default function DepartmentsPage() {
         }}
         defaultValues={
           selected
-            ? {
-                name: selected.name,
-              }
+            ? selected
             : undefined
         }
-      /> */}
+        branchs={branches}
+      />
 
       {/* Confirm delete */}
       <ConfirmationDialog
