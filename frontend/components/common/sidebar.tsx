@@ -36,8 +36,8 @@ export default function Sidebar() {
                     Provinces
                 </Link>
 
-                <Link href="/payroll" className="px-6 py-3 hover:bg-slate-700">
-                    Payroll
+                <Link href="/dashboard/address/districts" className="px-6 py-3 hover:bg-slate-700">
+                    Districts
                 </Link>
 
             </nav>
