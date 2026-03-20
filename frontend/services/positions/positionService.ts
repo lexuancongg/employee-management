@@ -42,6 +42,14 @@ class positionService {
 
     }
 
+    public async getPositionAlls():Promise<PositionResponse[]>{
+        const response = await apiClient.get(this.employeeUrl);
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
+    }
+
 }
 
 export default new positionService();

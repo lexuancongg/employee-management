@@ -41,5 +41,14 @@ class  DistrictService {
         }
 
     }
+
+    public async getDistrictByProvince(id:number):Promise<DistrictResponse[]>{
+        const response  = await apiClient.get(`${this.managementUrl}/${id}`);
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
+        
+    }
 }
 export default new DistrictService();

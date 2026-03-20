@@ -43,6 +43,14 @@ class DepartmentService {
             throw response;
         }
     }
+
+    public async getDepartmentByBranch(branchId:number):Promise<DepartmentResponse[]>{
+        const response = await apiClient.get(`${this.employeeUrl}/${branchId}`);
+        if(response.ok){
+            return await response.json()
+        }
+        throw response;
+    }
 }
 
 export default new DepartmentService();

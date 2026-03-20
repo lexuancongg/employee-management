@@ -1,5 +1,6 @@
 import apiClient from "@/utils/api/apiClient";
 import { PageResponse } from "@/models/page/pageResponse";
+import { AArrowUp } from "lucide-react";
 
 class ProvinceService {
     private managementUrl: string;
@@ -49,6 +50,14 @@ class ProvinceService {
         if (!response.ok) {
             throw response;
         }
+    }
+
+    public async getProvinceByCountry(id:number):Promise<ProvinceResponse[]>{
+        const response = await apiClient.get(`${this.managementUrl}/${id}`);
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
     }
 
 
