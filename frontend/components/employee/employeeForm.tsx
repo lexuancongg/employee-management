@@ -166,15 +166,20 @@ const EmployeeForm: FC<Props> = ({
                         </FormItem>
                     </div>
                 </div>
-               <div>
-                    <h3 className="text-lg font-medium mb-4">Address</h3>
 
-                 {id ? <AddressForm
-                    register={register}
-                    addressInit={defaultValue?.address}
-                    setValue={setValue}
-                ></AddressForm> : ''}
-               </div>
+
+                {id ?
+                    <div>
+                        <h3 className="text-lg font-medium mb-4">Address</h3>
+
+                        <AddressForm
+                            register={register}
+                            addressInit={defaultValue?.address}
+                            setValue={setValue}
+                        ></AddressForm>
+                    </div>
+
+                    : ''}
 
                 <div className="flex justify-end">
                     <button

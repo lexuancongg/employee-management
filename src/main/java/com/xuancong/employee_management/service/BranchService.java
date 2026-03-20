@@ -32,6 +32,7 @@ public class BranchService {
     private final DistrictRepository districtRepository;
     private final EmployeeRepository employeeRepository;
     private final AddressRepository addressRepository;
+    private final DepartmentRepository departmentRepository;
 
     public BranchResponse create(BranchCreateRequest branchCreateRequest){
         Branch branch = new Branch();
@@ -60,7 +61,7 @@ public class BranchService {
     public void delete(Long id){
         Branch branch = branchRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.BRANCH_NOT_FOUND));
-        if(employeeRepository.existsByBranch(branch)){
+        if(departmentRepository.existsByBranch(branch)){
             throw new ResourceInUseException(Constants.ErrorKey.BRANCH_HAS_EMPLOYEE);
         }
         branchRepository.delete(branch);

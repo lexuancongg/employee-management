@@ -3,9 +3,18 @@
 import { EmployeeCreateRequest, EmployeeField } from '@/models/employee/employee'
 
 import EmployeeForm from '@/components/employee/employeeForm'
+import employeeService from '@/services/employee/employeeService';
 
 export default function CreateEmployeePage() {
-  const handleCreate=(data:EmployeeField)=>{
+  const handleCreate= async (data:EmployeeField)=>{
+     const employee: EmployeeCreateRequest = { ...data };
+     try {
+       await employeeService.createEmployee(employee)
+       
+
+     } catch (error) {
+      
+     }
 
   }
   return  (

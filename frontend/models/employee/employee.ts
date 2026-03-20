@@ -14,6 +14,7 @@ export type EmployeeResponse = {
   positionId: number;
   departmentId: number;
   departmentName: string;
+  branchId:number
 };
 
 
@@ -30,7 +31,7 @@ export type EmployeeDetailResponse = {
   position: PositionResponse
   department: DepartmentResponse
   avatar: ImageGetResponse
-  address: AddressResponse
+  address?: AddressResponse
 }
 
 
@@ -59,8 +60,8 @@ export type EmployeeCreateRequest = {
   phone: string;
   birthday: string; 
   hireDate: string; 
-  status: EmployeeStatus;
-  avatarId: number;
+  status?: EmployeeStatus;
+  avatarId?: number;
   positionId: number;
   departmentId: number;
   // address: AddressCreateRequest
@@ -72,3 +73,4 @@ export type EmployeeCreateRequest = {
   // districtId: number;
   // specificAddress: string;
 };
+

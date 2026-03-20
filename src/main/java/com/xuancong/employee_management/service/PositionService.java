@@ -92,5 +92,12 @@ public class PositionService {
 
     }
 
+    public List<PositionResponse> getAllPositions(){
+        List<Position> positions = positionRepository.findAll();
+        return positions.stream()
+                .map(PositionResponse::fromPosition)
+                .toList();
+    }
+
 
 }

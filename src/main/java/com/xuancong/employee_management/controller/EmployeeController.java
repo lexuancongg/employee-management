@@ -5,12 +5,16 @@ import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
+import com.xuancong.employee_management.enums.EmployeeStatus;
 import com.xuancong.employee_management.service.EmployeeService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 public class EmployeeController {
     private final EmployeeService employeeService;
 
-    @PostMapping("/employees")
+    @PostMapping("/management/employees")
     public ResponseEntity<EmployeeResponse> createEmployee(
             @Valid @RequestBody EmployeeCreateRequest employeeCreateRequest) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -37,25 +41,36 @@ public class EmployeeController {
     }
 
 
-    @GetMapping("/employees/{id}")
+    @GetMapping("/management/employees/{id}")
     public ResponseEntity<EmployeeDetailResponse> getEmployee(@PathVariable Long id) {
         return ResponseEntity.ok(
                 this.employeeService.getEmployee(id)
         );
     }
 
-    @GetMapping("/employees")
+    @GetMapping("/management/employees")
     public ResponseEntity<PageResponse<EmployeeResponse>> getEmployees(
             @RequestParam(required = false) String name,
             @RequestParam(required = false) String code,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) Long branchId,
+            @RequestParam(required = false) Long positionId,
+            @RequestParam(required = false) EmployeeStatus status,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hireDateFrom,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate hireDateTo,
             @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
             @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize,
-            @RequestParam(defaultValue = "id,desc") String sort
+            @RequestParam(defaultValue = "name") String sortBy,
+            @RequestParam(defaultValue = "asc") String sortDir
     ) {
         return ResponseEntity.ok(
-                employeeService.getEmployees(name, code, email, departmentId, pageIndex, pageSize, sort)
+                employeeService.getEmployees(
+                        name, code, email, departmentId, branchId, positionId, status,
+                        hireDateFrom, hireDateTo,
+                        pageIndex, pageSize, sortBy,
+                        sortDir
+                )
         );
     }
 

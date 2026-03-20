@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -50,5 +52,14 @@ public class DepartmentController {
                 .ok(this.departmentService.getDepartments(pageIndex,pageSize,keyword,branchId));
     }
 
+
+    @GetMapping("/employee/departments/{branchId}")
+    public ResponseEntity<List<DepartmentResponse>> getAllDepartmentByBranch(
+            @PathVariable Long branchId
+    ) {
+            return  ResponseEntity.ok(
+                    departmentService.getAllDepartmentByBranch(branchId)
+            );
+    }
 
 }

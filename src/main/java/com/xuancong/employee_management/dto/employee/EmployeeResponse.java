@@ -9,22 +9,25 @@ public record EmployeeResponse(
         Long id,
         String employeeCode,
         String name,
-        String gender,
-        String email,
-        String phone,
         EmployeeStatus status,
-        LocalDate hireDate
+        String positionName,
+        Long positionId,
+        Long departmentId,
+        String departmentName,
+        Long branchId
 ) {
     public static EmployeeResponse fromEmployee(Employee employee) {
         return new EmployeeResponse(
                 employee.getId(),
                 employee.getEmployeeCode(),
                 employee.getName(),
-                employee.getGender(),
-                employee.getEmail(),
-                employee.getPhone(),
                 employee.getStatus(),
-                employee.getHireDate()
+                employee.getPosition().getName(),
+                employee.getPosition().getId(),
+                employee.getDepartment().getId(),
+                employee.getDepartment().getName(),
+                employee.getDepartment().getBranch().getId()
+
         );
     }
 

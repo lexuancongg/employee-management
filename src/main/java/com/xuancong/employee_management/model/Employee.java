@@ -26,6 +26,7 @@ public class Employee extends BaseAuditEntity {
     private String phone;
     private LocalDate birthday;
     private LocalDate hireDate;
+    @Enumerated(EnumType.STRING)
     private EmployeeStatus status;
     private Long avatarId;
 
@@ -43,8 +44,10 @@ public class Employee extends BaseAuditEntity {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "branch_id")
-    private Branch branch;
+
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "address_id")
+    private Address address;
 
 }

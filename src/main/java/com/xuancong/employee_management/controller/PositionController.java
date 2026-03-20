@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
@@ -43,6 +45,13 @@ public class PositionController {
         return ResponseEntity.ok(positionService.getPositionById(id));
     }
 
+
+    @GetMapping("/employee/positions")
+    public ResponseEntity<List<PositionResponse>> getAllPositions() {
+        return  ResponseEntity.ok(
+                positionService.getAllPositions()
+        );
+    }
 
 
     @PutMapping("management/positions/{id}")

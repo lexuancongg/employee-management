@@ -1,4 +1,4 @@
-import { EmployeeResponse } from "@/models/employee/employee";
+import { EmployeeCreateRequest, EmployeeDetailResponse, EmployeeResponse } from "@/models/employee/employee";
 import { PageResponse } from "@/models/page/pageResponse";
 import apiClient from "@/utils/api/apiClient";
 
@@ -45,6 +45,24 @@ class EmployeeService {
 
     const response = await apiClient.get(`${this.managementUrl}?${params.toString()}`);
     if (response.ok) {
+      return await response.json();
+    }
+    throw response;
+  }
+
+
+  public async createEmployee(employee:EmployeeCreateRequest):Promise<EmployeeResponse>{
+    const response = await apiClient.post(this.managementUrl,JSON.stringify(employee));
+    if(response.ok){
+      return await response.json()
+    }
+    throw response;
+
+  }
+
+  public async getDetailEmployee(id:number):Promise<EmployeeDetailResponse>{
+    const response = await apiClient.get(`${this.managementUrl}/${id}`);
+    if(response.ok){
       return await response.json();
     }
     throw response;

@@ -5,6 +5,7 @@ import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeCreateRequest;
 import com.xuancong.employee_management.dto.employee.EmployeeDetailResponse;
 import com.xuancong.employee_management.dto.employee.EmployeeResponse;
+import com.xuancong.employee_management.enums.EmployeeStatus;
 import com.xuancong.employee_management.exception.DuplicateResourceException;
 import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.kafka.message.EmployCreatedMessage;
@@ -27,6 +28,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -173,13 +175,29 @@ public class EmployeeService {
 
     }
 
-    public PageResponse<EmployeeResponse> getEmployees(String name, String code, String email, Long departmentId,
-                                                       int page, int size, String sort) {
+    public PageResponse<EmployeeResponse> getEmployees(
+            String name,
+            String code,
+            String email,
+            Long departmentId,
+            Long branchId,
+            Long positionId,
+            EmployeeStatus status,
+            LocalDate hireDateFrom,
+            LocalDate hireDateTo,
+            int page,
+            int size,
+            String sortBy,
+            String sortDir
+    )  {
 
 
-        Pageable pageable = PageRequest.of(page, size);
-        Specification<Employee> specification = EmployeeSpecification.filter(name, code, email, departmentId);
-        Sort sortEmployee = Sort.by(Sort.Direction.DESC, Constants.Column.ID);
+        Sort sort = Sort.by(sortDir.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC, sortBy);
+        Pageable pageable = PageRequest.of(page, size, sort);
+
+        Specification<Employee> specification = EmployeeSpecification.filter(
+                name, code, email, departmentId, branchId, positionId, status, hireDateFrom, hireDateTo
+        );
         Page<Employee> employeePage = this.employeeRepository.findAll(specification, pageable);
         List<Employee> employees = employeePage.getContent();
         List<EmployeeResponse> content = employees.stream()
@@ -191,7 +209,6 @@ public class EmployeeService {
                 (int) employeePage.getTotalElements(),
                 employeePage.getTotalPages(),
                 employeePage.isLast()
-
         );
 
     }

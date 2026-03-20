@@ -108,4 +108,16 @@ public class DepartmentService {
         );
 
     }
+
+
+    public  List<DepartmentResponse> getAllDepartmentByBranch(Long branchId) {
+        boolean branchExist = branchRepository.existsById(branchId);
+        if (!branchExist) {
+            throw new NotFoundException(Constants.ErrorKey.DEPARTMENT_NOT_FOUND, branchId);
+        }
+        List<Department> departments = departmentRepository.findAllByBranch_Id(branchId);
+        return  departments.stream()
+                .map(DepartmentResponse::fromDepartment)
+                .toList();
+    }
 }

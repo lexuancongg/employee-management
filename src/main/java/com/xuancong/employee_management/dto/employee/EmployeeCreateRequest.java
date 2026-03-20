@@ -10,7 +10,9 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record EmployeeCreateRequest(
+        @NotBlank(message = "Name is required")
         String name,
+
         String gender,
         @Email(message = "Invalid email format")
         String email,
@@ -35,7 +37,7 @@ public record EmployeeCreateRequest(
                         .phone(phone)
                         .birthday(birthday)
                         .hireDate(hireDate)
-                        .status(status)
+                        .status(status!=null ? status : EmployeeStatus.ACTIVE)
                         .avatarId(avatarId)
                         .build();
         }

@@ -1,5 +1,6 @@
 package com.xuancong.employee_management.dto.employee;
 
+import com.xuancong.employee_management.dto.address.AddressResponse;
 import com.xuancong.employee_management.dto.department.DepartmentResponse;
 import com.xuancong.employee_management.dto.image.ImageGetResponse;
 import com.xuancong.employee_management.dto.position.PositionResponse;
@@ -19,12 +20,14 @@ public record EmployeeDetailResponse(
         EmployeeStatus status,
         PositionResponse position,
         DepartmentResponse department,
-        ImageGetResponse avatar
+        ImageGetResponse avatar,
+        AddressResponse address
 
 ) {
     public static EmployeeDetailResponse from(Employee employee) {
         PositionResponse position = PositionResponse.fromPosition(employee.getPosition());
         DepartmentResponse department = DepartmentResponse.fromDepartment(employee.getDepartment());
+//        AddressResponse address = AddressResponse.fromAddress(employee.getAddress());
         return new EmployeeDetailResponse(
                 employee.getId(),
                 employee.getName(),
@@ -36,7 +39,9 @@ public record EmployeeDetailResponse(
                 employee.getStatus(),
                 position,
                 department,
+                null,
                 null
+
         );
 
     }
