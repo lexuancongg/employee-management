@@ -67,6 +67,13 @@ class EmployeeService {
     }
     throw response;
   }
+
+  public async updateEmployee(id:number,employee:EmployeeCreateRequest):Promise<void>{
+    const response = await apiClient.put(`${this.managementUrl}/${id}`,JSON.stringify(employee));
+    if(!response.ok){
+      throw response;
+    }
+  }
 }
 
 export default new EmployeeService();

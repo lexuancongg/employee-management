@@ -14,15 +14,14 @@ import { DepartmentResponse } from '@/models/department/department';
 import { PositionResponse } from '@/models/positions/positionResponse';
 import Link from 'next/link';
 import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
-import EmployeeDetailModal from '@/components/employee/employeeDetailModal';
 
 export default function EmployeePage() {
     const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
     const [branches, setBranches] = useState<BranchResponse[]>([]);
     const [departments, setDepartments] = useState<DepartmentResponse[]>([]);
     const [positions, setPositions] = useState<PositionResponse[]>([]);
-    
-    const [employeeMore,setEmployeeMore] = useState<EmployeeDetailResponse>();
+
+    const [employeeMore, setEmployeeMore] = useState<EmployeeDetailResponse>();
     const [pageIndex, setPageIndex] = useState(0);
     const [pageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(0);
@@ -41,8 +40,8 @@ export default function EmployeePage() {
     const [selectedEmployee, setSelectedEmployee] = useState<EmployeeResponse | null>(null);
     const [deleteId, setDeleteId] = useState<number | null>(null);
     const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    
-    const [moreInfoId,setMoreInfoId] = useState<number>();
+
+    const [moreInfoId, setMoreInfoId] = useState<number>();
 
     const fetchEmployees = useCallback(async () => {
         setLoading(true);
@@ -75,20 +74,20 @@ export default function EmployeePage() {
     ]);
 
 
-    
-    useEffect(()=>{
-        if(!moreInfoId){
+
+    useEffect(() => {
+        if (!moreInfoId) {
             return;
         }
         employeeService.getDetailEmployee(moreInfoId)
-        .then(res=>{
-            setEmployeeMore(res)
-        })
-        .catch((error)=>{
-            console.log(error)
-        })
-        
-    },[moreInfoId])
+            .then(res => {
+                setEmployeeMore(res)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+
+    }, [moreInfoId])
 
     useEffect(() => {
         fetchEmployees();
@@ -231,16 +230,18 @@ export default function EmployeePage() {
                                     <td className="p-4">{branches.find(b => b.id === e.branchId)?.name || ''}</td>
                                     <td className="p-4">{e.status}</td>
                                     <td className="p-4 text-right flex items-center space-x-2 justify-end">
-                                        <button className="p-2 w-9 h-9 flex justify-center items-center border rounded-lg hover:bg-indigo-50 transition">
-                                            <PencilIcon className="w-5 h-5 text-indigo-600" />
-                                        </button>
+                                        <Link href={`/dashboard/employees/${e.id}/edit`}>
+                                            <button className="p-2 w-9 h-9 flex justify-center items-center border rounded-lg hover:bg-indigo-50 transition">
+                                                <PencilIcon className="w-5 h-5 text-indigo-600" />
+                                            </button>
+                                        </Link>
                                         <button
                                             onClick={() => setDeleteId(e.id)}
                                             className="p-2 w-9 h-9 flex justify-center items-center bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
                                         >
                                             <TrashIcon className="w-5 h-5" />
                                         </button>
-                                        <button onClick={()=> setMoreInfoId(e.id)} className="p-2 w-9 h-9 flex justify-center items-center border rounded-lg hover:bg-indigo-50 transition">
+                                        <button onClick={() => setMoreInfoId(e.id)} className="p-2 w-9 h-9 flex justify-center items-center border rounded-lg hover:bg-indigo-50 transition">
                                             <EyeIcon className="w-5 h-5 text-indigo-600" />
                                         </button>
                                     </td>

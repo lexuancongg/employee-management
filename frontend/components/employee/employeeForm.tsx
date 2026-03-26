@@ -52,7 +52,10 @@ const EmployeeForm: FC<Props> = ({
             return
         }
         departmentService.getDepartmentByBranch(selectedBranch)
-            .then(setDepartments)
+            .then(res => {
+                setDepartments(res)
+
+            })
     }, [selectedBranch])
 
     useEffect(() => {
@@ -76,6 +79,19 @@ const EmployeeForm: FC<Props> = ({
 
     }, [defaultValue, reset])
 
+
+    useEffect(() => {
+        if (!defaultValue?.department?.id) return
+        if (departments.length === 0) return
+        const isSameBranch =
+            selectedBranch == defaultValue.department.branchId
+        if (!isSameBranch){
+        //    setValue('departmentId', undefined)
+        return
+        }
+
+        setValue('departmentId', defaultValue.department.id as any)
+    }, [departments, defaultValue])
 
 
 
@@ -168,7 +184,7 @@ const EmployeeForm: FC<Props> = ({
                 </div>
 
 
-                {id ?
+                {/* {id ?
                     <div>
                         <h3 className="text-lg font-medium mb-4">Address</h3>
 
@@ -179,7 +195,7 @@ const EmployeeForm: FC<Props> = ({
                         ></AddressForm>
                     </div>
 
-                    : ''}
+                    : ''} */}
 
                 <div className="flex justify-end">
                     <button
@@ -214,7 +230,6 @@ const EmployeeForm: FC<Props> = ({
     )
 }
 
-/* ===== REUSABLE ===== */
 function FormItem({ label, children }: any) {
     return (
         <div className="flex flex-col gap-1">
