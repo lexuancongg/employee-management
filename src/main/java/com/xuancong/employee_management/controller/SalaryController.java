@@ -1,10 +1,13 @@
 package com.xuancong.employee_management.controller;
 
+import com.xuancong.employee_management.constants.Constants;
+import com.xuancong.employee_management.dto.paging.PageResponse;
 import com.xuancong.employee_management.dto.salary.SalaryCreateRequest;
+import com.xuancong.employee_management.dto.salary.SalaryDetailResponse;
 import com.xuancong.employee_management.dto.salary.SalaryResponse;
 import com.xuancong.employee_management.service.SalaryService;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
+import org.aspectj.apache.bcel.classfile.Constant;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,6 +40,35 @@ public class SalaryController {
                 salaryService.getSalary(employeeId)
         );
     }
+
+
+    @GetMapping("/management/salaries")
+    public ResponseEntity<PageResponse<SalaryDetailResponse>> getSalaries(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) Long branchId,
+            @RequestParam(required = false) Long departmentId,
+            @RequestParam(required = false) Long positionId,
+            @RequestParam(required = false) Boolean active,
+            @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
+            @RequestParam(defaultValue = Constants.Paging.DEFAULT_PAGE_SIZE) int pageSize
+
+    ){
+        return  ResponseEntity.ok(
+                salaryService.getSalariesFilter(
+                        keyword,
+                        email,
+                        branchId,
+                        departmentId,
+                        positionId,
+                        pageIndex,
+                        pageSize
+                )
+        );
+    }
+
+
+
 
 
 }

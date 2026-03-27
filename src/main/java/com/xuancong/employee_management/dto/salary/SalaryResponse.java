@@ -10,7 +10,6 @@ public record SalaryResponse(
         Long employeeId,
         BigDecimal baseSalary,
         LocalDate effectiveDate,
-        LocalDate endDate,
         boolean active,
         String note
 ) {
@@ -20,7 +19,6 @@ public record SalaryResponse(
                 salary.getEmployee().getId(),
                 salary.getBaseSalary(),
                 salary.getEffectiveDate(),
-                salary.getEndDate(),
                 salary.isActive(),
                 salary.getNote()
         );

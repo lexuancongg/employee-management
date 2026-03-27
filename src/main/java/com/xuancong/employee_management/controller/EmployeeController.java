@@ -31,7 +31,7 @@ public class EmployeeController {
     }
 
 
-    @PutMapping("/employees/{id}")
+    @PutMapping("/management/employees/{id}")
     public ResponseEntity<Void> updateEmployee(
             @PathVariable Long id,
             @Valid @RequestBody EmployeeCreateRequest employeeCreateRequest
@@ -74,7 +74,7 @@ public class EmployeeController {
         );
     }
 
-    @DeleteMapping("/employees/{id}")
+    @DeleteMapping("/management/employees/{id}")
     public ResponseEntity<Void> deleteEmployee(@PathVariable Long id) {
         this.employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();

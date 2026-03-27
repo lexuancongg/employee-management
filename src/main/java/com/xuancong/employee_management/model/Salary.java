@@ -18,6 +18,10 @@ public class Salary {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private BigDecimal baseSalary;
+    private BigDecimal allowance;
+    private BigDecimal socialInsurance;
+    private BigDecimal healthInsurance;
+    private BigDecimal unemploymentInsurance;
 
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn(name = "employee_id", nullable = false)
@@ -27,5 +31,6 @@ public class Salary {
     private LocalDate effectiveDate;
     private boolean active;
     private String note;
+
 
 }

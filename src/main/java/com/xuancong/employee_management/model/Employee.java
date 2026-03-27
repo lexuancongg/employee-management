@@ -40,10 +40,11 @@ public class Employee extends BaseAuditEntity {
     @JoinColumn(name = "department_id",nullable = false)
     private Department department;
 
-    @OneToOne
+
+
+    @OneToOne(orphanRemoval = true)
     @JoinColumn(name = "user_id", unique = true)
     private User user;
-
 
 
     @OneToOne(cascade = CascadeType.ALL)

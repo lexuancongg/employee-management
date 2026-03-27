@@ -1,11 +1,15 @@
 package com.xuancong.employee_management.dto.salary;
 
+import lombok.Builder;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record SalaryCreateRequest(
         BigDecimal baseSalary,
         LocalDate effectiveDate,
-        String note
+        String note,
+        BigDecimal allowance,
+        Long employeeId
 ) {
 }
