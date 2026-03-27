@@ -41,7 +41,6 @@ export default function DepartmentFormModal({
 
 
 
-  
 
   useEffect(() => {
     if (open) {

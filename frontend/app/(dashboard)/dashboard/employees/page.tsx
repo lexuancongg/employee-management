@@ -14,6 +14,7 @@ import { DepartmentResponse } from '@/models/department/department';
 import { PositionResponse } from '@/models/positions/positionResponse';
 import Link from 'next/link';
 import { PencilIcon, TrashIcon, EyeIcon } from '@heroicons/react/24/outline';
+import EmployeeDetailModal from '@/components/employee/employeeDetailModal';
 
 export default function EmployeePage() {
     const [employees, setEmployees] = useState<EmployeeResponse[]>([]);
@@ -122,7 +123,7 @@ export default function EmployeePage() {
 
     const handleDelete = async (id: number) => {
         try {
-            //   await employeeService.deleteEmployee(id);
+            await employeeService.deleteEmployee(id);
             fetchEmployees();
         } catch (err) {
             console.error(err);
@@ -251,6 +252,16 @@ export default function EmployeePage() {
                     </tbody>
                 </table>
             </div>
+            <EmployeeDetailModal
+            employeeDetail={employeeMore}
+            onClose={()=>{
+                setMoreInfoId(undefined)
+            }}
+            open={moreInfoId!=undefined}
+
+            >
+
+            </EmployeeDetailModal>
 
             {/* Pagination */}
             <Pagination

@@ -74,6 +74,13 @@ class EmployeeService {
       throw response;
     }
   }
+
+  public async deleteEmployee(id:number):Promise<void>{
+    const response = await apiClient.delete(`${this.managementUrl}/${id}`);
+    if(!response.ok){
+      throw response;
+    }
+  }
 }
 
 export default new EmployeeService();

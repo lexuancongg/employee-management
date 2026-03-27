@@ -2,7 +2,7 @@
 
 import { BranchResponse } from "@/models/branch/branchResponse"
 import { DepartmentResponse } from "@/models/department/department"
-import { EmployeeDetailResponse, EmployeeField } from "@/models/employee/employee"
+import { EmployeeDetailResponse, EmployeeField, EmployeeStatus } from "@/models/employee/employee"
 import { PositionResponse } from "@/models/positions/positionResponse"
 import branchService from "@/services/branch/branchService"
 import departmentService from "@/services/department/departmentService"
@@ -11,6 +11,12 @@ import { useParams } from "next/navigation"
 import { FC, useEffect, useState } from "react"
 import { useForm } from "react-hook-form"
 import AddressForm from "../address/addressForm"
+
+const statusOptions: { id: EmployeeStatus; name: string }[] = [
+    { id: "ACTIVE", name: "Active" },
+    { id: "ONLEAVE", name: "On Leave" },
+    { id: "PENDING", name: "Pending" },
+];
 
 type Props = {
     mode: 'create' | 'update'
@@ -71,7 +77,7 @@ const EmployeeForm: FC<Props> = ({
             gender: defaultValue.gender,
             birthday: defaultValue.birthday,
             hireDate: defaultValue.hireDate,
-
+            status:defaultValue.status,
             branchId: branchId as any,
             departmentId: defaultValue.department?.id as any,
             positionId: defaultValue.position?.id as any
@@ -85,9 +91,9 @@ const EmployeeForm: FC<Props> = ({
         if (departments.length === 0) return
         const isSameBranch =
             selectedBranch == defaultValue.department.branchId
-        if (!isSameBranch){
-        //    setValue('departmentId', undefined)
-        return
+        if (!isSameBranch) {
+            //    setValue('departmentId', undefined)
+            return
         }
 
         setValue('departmentId', defaultValue.department.id as any)
@@ -136,6 +142,17 @@ const EmployeeForm: FC<Props> = ({
                         <FormItem label="Hire date">
                             <input type="date" {...register('hireDate')} className="input" />
                         </FormItem>
+
+
+                        <FormItem label="Status">
+                            <select {...register("status")} className="input">
+                                <option value="">Select status</option>
+                                {statusOptions.map(d => (
+                                    <option key={d.id} value={d.id}>{d.name}</option>
+                                ))}
+                            </select>
+                        </FormItem>
+
                     </div>
                 </div>
 

@@ -49,6 +49,7 @@ export type EmployeeField = {
    countryId: number;
   provinceId: number;
   districtId: number;
+  status:EmployeeStatus
 
 
 }
