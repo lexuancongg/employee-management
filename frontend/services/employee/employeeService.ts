@@ -81,6 +81,17 @@ class EmployeeService {
       throw response;
     }
   }
+
+  public async getEmployeeBySearch(keyword:string):Promise<EmployeeResponse[]>{
+    const response = await apiClient.get(
+    `${this.managementUrl}/search?keyword=${keyword}`
+  );
+
+    if(response.ok){
+      return await response.json();
+    }
+    throw response;
+  }
 }
 
 export default new EmployeeService();

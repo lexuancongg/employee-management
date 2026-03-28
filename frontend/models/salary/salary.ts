@@ -14,6 +14,7 @@ export type SalaryDetailResponse = {
   effectiveDate: string;            
   active: boolean;
   note: string;
+  endDate:string;
 };
 
 

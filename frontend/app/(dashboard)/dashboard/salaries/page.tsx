@@ -6,7 +6,6 @@ import { BranchResponse } from '@/models/branch/branchResponse';
 import { DepartmentResponse } from '@/models/department/department';
 import { PositionResponse } from '@/models/positions/positionResponse';
 import { PageResponse } from '@/models/page/pageResponse';
-// import salaryService from '@/services/salary/salaryService';
 import branchService from '@/services/branch/branchService';
 import departmentService from '@/services/department/departmentService';
 import positionService from '@/services/positions/positionService';
@@ -87,7 +86,7 @@ export default function SalaryPage() {
                     <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Salary Config</h1>
                     <p className="text-gray-500 mt-1 text-sm">Manage base salary configurations per employee</p>
                 </div>
-                <Link href="/dashboard/salary/create">
+                <Link href="/dashboard/salaries/create">
                     <button className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:opacity-90 transition-all text-sm font-medium">
                         <PlusIcon className="w-4 h-4" />
                         Add Salary Config
@@ -233,12 +232,12 @@ export default function SalaryPage() {
                                     </td>
                                     <td className="px-4 py-3">
                                         <div className="flex items-center gap-2">
-                                            <Link href={`/dashboard/salary/${s.id}/edit`}>
+                                            <Link href={`/dashboard/salaries/${s.id}/edit`}>
                                                 <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition">
                                                     <PencilIcon className="w-4 h-4 text-indigo-600" />
                                                 </button>
                                             </Link>
-                                            <Link href={`/dashboard/salary/${s.id}`}>
+                                            <Link href={`/dashboard/salaries/employees/${s.employeeId}`}>
                                                 <button className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition">
                                                     <EyeIcon className="w-4 h-4 text-indigo-600" />
                                                 </button>

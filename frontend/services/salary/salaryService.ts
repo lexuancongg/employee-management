@@ -1,5 +1,5 @@
 import { PageResponse } from "@/models/page/pageResponse";
-import { SalaryDetailResponse } from "@/models/salary/salary";
+import { SalaryCreateRequest, SalaryDetailResponse } from "@/models/salary/salary";
 import apiClient from "@/utils/api/apiClient";
 
 class SalaryService {
@@ -32,6 +32,31 @@ class SalaryService {
 
         const response = await apiClient.get(`${this.managementUrl}?${query.toString()}`);
         if (response.ok) {
+            return await response.json();
+        }
+        throw response;
+    }
+
+
+    public async createSalary(salary:SalaryCreateRequest):Promise<void>{
+        const response = await apiClient.post(`${this.managementUrl}`,JSON.stringify(salary))
+        if(!response.ok){
+            throw response;
+        }
+        
+    }
+
+    public async getById(id:number):Promise<SalaryDetailResponse>{
+        const response = await apiClient.get(`${this.managementUrl}/${id}`);
+        if(response.ok){
+            return await response.json();
+        }
+        throw response;
+    }
+
+    public async getByEmployeeId(employeeId:number):Promise<SalaryDetailResponse[]>{
+        const response = await apiClient.get(`${this.managementUrl}/employee/${employeeId}`);
+          if(response.ok){
             return await response.json();
         }
         throw response;

@@ -19,7 +19,6 @@ export default function CreateSalaryPage() {
     const searchRef = useRef<HTMLDivElement>(null);
     const searchTimeout = useRef<NodeJS.Timeout | null>(null);
 
-    // Form
     const [form, setForm] = useState<Omit<SalaryCreateRequest, 'employeeId'>>({
         baseSalary: 0,
         allowance: 0,
@@ -49,8 +48,8 @@ export default function CreateSalaryPage() {
         searchTimeout.current = setTimeout(async () => {
             setSearching(true);
             try {
-                const res = await employeeService.getEmployees(value, undefined, undefined, undefined, undefined, undefined, undefined, undefined, undefined, 0, 8, 'name', 'asc');
-                setSearchResults(res.content);
+                const res = await employeeService.getEmployeeBySearch(value);
+                setSearchResults(res);
             } catch (e) {
                 console.error(e);
             } finally {
@@ -94,8 +93,8 @@ export default function CreateSalaryPage() {
                 ...form,
                 employeeId: selectedEmployee!.id,
             };
-            // await salaryService.createSalary(payload);
-            router.push('/dashboard/salary');
+            await salaryService.createSalary(payload);
+            router.push('/dashboard/salaries');
         } catch (err) {
             console.error(err);
         } finally {
@@ -191,7 +190,6 @@ export default function CreateSalaryPage() {
                     </div>
                     {errors.employeeId && <p className="text-xs text-red-500 mt-1">{errors.employeeId}</p>}
 
-                    {/* Selected employee card */}
                     {selectedEmployee && (
                         <div className="mt-3 flex items-center gap-3 bg-indigo-50 border border-indigo-200 rounded-xl px-4 py-3">
                             <div className="w-9 h-9 rounded-full bg-indigo-200 flex items-center justify-center flex-shrink-0">
@@ -272,7 +270,6 @@ export default function CreateSalaryPage() {
                     </div>
                 </div>
 
-                {/* ── Insurance Preview ── */}
                 {base > 0 && (
                     <div className="bg-gray-50 border border-gray-200 rounded-xl p-4">
                         <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-3">
