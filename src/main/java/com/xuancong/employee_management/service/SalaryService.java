@@ -21,6 +21,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -30,28 +31,33 @@ public class SalaryService {
     private final SalaryRepository salaryRepository;
     private final EmployeeRepository employeeRepository;
 
-    public SalaryResponse createSalary(Long employeeId,
+    public SalaryResponse createSalary(
                                        SalaryCreateRequest req) {
 
-        Employee employee = validateExitingEmployee(employeeId);
+        Employee employee = validateExitingEmployee(req.employeeId());
 
         boolean isFirst =
-                !salaryRepository.existsByEmployee_IdAndActiveTrue(employeeId);
+                !salaryRepository.existsByEmployee_IdAndActiveTrue(req.employeeId());
 
         if (!isFirst) {
             Salary activeSalary =
-                    salaryRepository.findByEmployee_IdAndActiveTrue(employeeId)
+                    salaryRepository.findByEmployee_IdAndActiveTrue(req.employeeId())
                             .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND));
 
             activeSalary.setActive(false);
             activeSalary.setEndDate(req.effectiveDate().minusDays(1));
+            salaryRepository.save(activeSalary);
         }
 
         Salary salary = Salary.builder()
-                .note(req.note())
-                .baseSalary(req.baseSalary())
-                .effectiveDate(req.effectiveDate())
                 .employee(employee)
+                .baseSalary(req.baseSalary())
+                .allowance(req.allowance())
+                .socialInsurance(req.baseSalary().multiply(new BigDecimal("0.08")))
+                .healthInsurance(req.baseSalary().multiply(new BigDecimal("0.015")))
+                .unemploymentInsurance(req.baseSalary().multiply(new BigDecimal("0.01")))
+                .effectiveDate(req.effectiveDate())
+                .note(req.note())
                 .active(true)
                 .build();
 
@@ -76,17 +82,17 @@ public class SalaryService {
     }
 
 
-    public List<SalaryResponse> getSalary(Long employeeId){
+    public List<SalaryDetailResponse> getSalary(Long employeeId){
         Employee employee = validateExitingEmployee(employeeId);
         Sort sort = Sort.by(
-                Sort.Order.desc("isActive"),
+                Sort.Order.desc("active"),
                 Sort.Order.desc("effectiveDate")
         );
 
         List<Salary> salaries =
                 salaryRepository.findByEmployee(employee, sort);
         return  salaries.stream()
-                .map(SalaryResponse::fromSalary)
+                .map(SalaryDetailResponse::fromSalary)
                 .toList();
 
 
@@ -127,6 +133,12 @@ public class SalaryService {
         );
 
 
+    }
+
+    public SalaryDetailResponse getSalaryById(Long id){
+        Salary salary = salaryRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(Constants.ErrorKey.EMPLOYEE_NOT_FOUND));
+        return SalaryDetailResponse.fromSalary(salary);
     }
 
 

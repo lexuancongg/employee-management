@@ -27,6 +27,7 @@ public record SalaryDetailResponse(
     public static  SalaryDetailResponse fromSalary(Salary salary) {
         return SalaryDetailResponse.builder()
                 .id(salary.getId())
+                .employeeId(salary.getEmployee().getId())
                 .active(salary.isActive())
                 .baseSalary(salary.getBaseSalary())
                 .email(salary.getEmployee().getEmail())

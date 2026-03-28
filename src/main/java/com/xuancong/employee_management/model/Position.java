@@ -17,7 +17,6 @@ public class Position extends BaseAuditEntity{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    // level
 
 
     @OneToMany(mappedBy = "position")

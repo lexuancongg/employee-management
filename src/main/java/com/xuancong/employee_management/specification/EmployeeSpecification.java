@@ -78,4 +78,21 @@ public class EmployeeSpecification {
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
     }
+
+
+
+    public static Specification<Employee> searchByKeyword(String keyword) {
+        return (root, query, cb) -> {
+            if (keyword == null || keyword.isBlank()) {
+                return cb.conjunction(); // luôn true
+            }
+
+            String likePattern = "%" + keyword.toLowerCase() + "%";
+
+            return cb.or(
+                    cb.like(cb.lower(root.get("name")), likePattern),
+                    cb.like(cb.lower(root.get("email")), likePattern)
+            );
+        };
+    }
 }

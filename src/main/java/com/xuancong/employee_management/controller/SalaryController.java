@@ -19,11 +19,11 @@ import java.util.List;
 public class SalaryController {
     private final SalaryService salaryService;
 
-    @PostMapping("/employees/{employeeId}/salaries")
-    public ResponseEntity<SalaryResponse> createSalary(@PathVariable("employeeId") Long employeeId,
+    @PostMapping("/management/salaries")
+    public ResponseEntity<SalaryResponse> createSalary(
                                                        @RequestBody SalaryCreateRequest salaryCreateRequest) {
         return ResponseEntity.ok(
-                this.salaryService.createSalary(employeeId,salaryCreateRequest)
+                this.salaryService.createSalary(salaryCreateRequest)
         );
     }
 
@@ -34,8 +34,8 @@ public class SalaryController {
         );
     }
 
-    @GetMapping("/employees/{employeeId}/salaries")
-    public ResponseEntity<List<SalaryResponse>> getSalary(@PathVariable("employeeId") Long employeeId) {
+    @GetMapping("/management/salaries/employee/{employeeId}")
+    public ResponseEntity<List<SalaryDetailResponse>> getSalary(@PathVariable("employeeId") Long employeeId) {
         return ResponseEntity.ok(
                 salaryService.getSalary(employeeId)
         );
@@ -64,6 +64,13 @@ public class SalaryController {
                         pageIndex,
                         pageSize
                 )
+        );
+    }
+
+    @GetMapping("/management/salaries/{id}")
+    public ResponseEntity<SalaryDetailResponse> getSalaryById(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(
+                salaryService.getSalaryById(id)
         );
     }
 

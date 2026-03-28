@@ -219,4 +219,12 @@ public class EmployeeService {
         employeeRepository.delete(employee);
 
     }
+
+
+    public List<EmployeeResponse> getEmployeesBySearch(String keyword){
+        List<Employee> employees = employeeRepository.findAll(EmployeeSpecification.searchByKeyword(keyword));
+        return  employees.stream()
+                .map(EmployeeResponse::fromEmployee)
+                .toList();
+    }
 }

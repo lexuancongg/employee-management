@@ -15,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -79,6 +80,20 @@ public class EmployeeController {
         this.employeeService.deleteEmployee(id);
         return ResponseEntity.noContent().build();
     }
+
+
+    @GetMapping("/management/employees/search")
+    public ResponseEntity<List<EmployeeResponse>> getEmployeesBySearch(
+            @RequestParam(required = false) String keyword
+    ){
+        return  ResponseEntity.ok(
+                employeeService.getEmployeesBySearch(keyword)
+        );
+    }
+
+
+
+
 
 
 
