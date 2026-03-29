@@ -65,6 +65,7 @@ public class BranchController {
         );
     }
 
+    // pass
     @GetMapping("/employee/branchs")
     public ResponseEntity<List<BranchResponse>> getAllBranches(){
         return  ResponseEntity.ok(

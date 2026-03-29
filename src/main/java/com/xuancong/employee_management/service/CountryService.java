@@ -12,6 +12,7 @@ import com.xuancong.employee_management.model.Country;
 import com.xuancong.employee_management.repository.AddressRepository;
 import com.xuancong.employee_management.repository.CountryRepository;
 import com.xuancong.employee_management.repository.ProvinceRepository;
+import com.xuancong.employee_management.specification.CountrySpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,9 +37,11 @@ public class CountryService {
         this.addressRepository = addressRepository;
     }
 
+
     public PageResponse<CountryResponse> getCountriesPaging(final int pageIndex, final int pageSize,String keyword){
         final Pageable pageable = PageRequest.of(pageIndex, pageSize, Sort.by(Sort.Direction.ASC,"name"));
-        final Page<Country> countryPage = countryRepository.findAllByNameContainingIgnoreCase(keyword,pageable);
+        final Page<Country> countryPage = countryRepository
+                .findAll(CountrySpecification.filterCountryByName(keyword),pageable);
         List<Country> countries = countryPage.getContent();
 
         List<CountryResponse> countryPayload = countries.stream()
@@ -52,6 +55,8 @@ public class CountryService {
                 .build();
 
     }
+
+
 
 
 

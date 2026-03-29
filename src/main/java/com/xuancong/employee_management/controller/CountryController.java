@@ -24,6 +24,7 @@ public class CountryController {
 
 
 
+    // pass
     @GetMapping("/management/countries")
     public ResponseEntity<PageResponse<CountryResponse>> getCountriesPaging(
             @RequestParam(name ="pageIndex" ,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER,required = false)
@@ -36,11 +37,17 @@ public class CountryController {
     }
 
 
+
+    // pass
     @GetMapping({"/employee/countries"})
     public ResponseEntity<List<CountryResponse>> getCountries(){
         return ResponseEntity.ok(countryService.getCountries());
     }
 
+
+
+
+    // pass
     @PostMapping("/management/countries")
     public ResponseEntity<CountryResponse> createCountry(
             @RequestBody @Valid final CountryCreateRequest countryCreateRequest,
@@ -56,6 +63,7 @@ public class CountryController {
     }
 
 
+    // pass
     @PutMapping("/management/countries/{id}")
     public ResponseEntity<Void> updateCountry(@PathVariable Long id,
                                               @RequestBody @Valid final CountryCreateRequest countryCreateRequest){
@@ -64,7 +72,7 @@ public class CountryController {
     }
 
 
-    // checked
+    // pass
     @DeleteMapping("/management/countries/{id}")
     public ResponseEntity<Void> deleteCountry(@PathVariable Long id){
         countryService.deleteCountry(id);

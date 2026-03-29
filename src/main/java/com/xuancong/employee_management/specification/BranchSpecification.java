@@ -17,7 +17,10 @@ public class BranchSpecification {
                                         "unaccent", String.class,
                                         criteriaBuilder.lower(root.get("name"))
                                 ),
-                                "%" + name.toLowerCase() + "%"
+                                criteriaBuilder.function(
+                                        "unaccent", String.class,
+                                        criteriaBuilder.literal("%" + name.toLowerCase() + "%")
+                                )
                         )
                 );
             }

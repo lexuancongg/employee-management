@@ -35,7 +35,7 @@ public class DistrictService {
         if (!provinceExits) {
            throw new NotFoundException(Constants.ErrorKey.PROVINCE_NOT_FOUND,provinceId);
         }
-        List<District> districts = districtRepository.findAllByProvince_Id(provinceId);
+        List<District> districts = districtRepository.findAllWithProvinceAndCountryByProvinceId(provinceId);
         return districts.stream()
                 .map(DistrictResponse::fromDistrict)
                 .toList();

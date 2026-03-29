@@ -18,6 +18,7 @@ import java.util.List;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
+    // pass
         @PostMapping("/management/departments")
     public ResponseEntity<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentCreateRequest departmentCreateRequest) {
         return ResponseEntity.ok(
@@ -25,6 +26,9 @@ public class DepartmentController {
         );
 
     }
+
+
+    // pass
     @PutMapping("/management/departments/{id}")
     public ResponseEntity<Void> updateDepartment(
             @PathVariable Long id,
@@ -35,12 +39,15 @@ public class DepartmentController {
     }
 
 
+    // pass
     @DeleteMapping("/management/departments/{id}")
     public ResponseEntity<Void> deleteDepartment(@PathVariable Long id) {
         this.departmentService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
+
+    // pass
     @GetMapping("/management/departments")
     public ResponseEntity<PageResponse<DepartmentResponse>> getDepartments(
             @RequestParam(name = "pageIndex",required = false,defaultValue = Constants.Paging.DEFAULT_PAGE_NUMBER) int pageIndex,
@@ -53,6 +60,8 @@ public class DepartmentController {
     }
 
 
+
+    // pass
     @GetMapping("/employee/departments/{branchId}")
     public ResponseEntity<List<DepartmentResponse>> getAllDepartmentByBranch(
             @PathVariable Long branchId

@@ -20,6 +20,7 @@ public class DistrictController {
     private final DistrictService districtService;
 
 
+    // pass
     @GetMapping({"/management/districts/{provinceId}","/customer/districts/{provinceId}"})
     public ResponseEntity<List<DistrictResponse>>  getDistrictByProvinceId(@PathVariable long provinceId){
         List<DistrictResponse> districts = districtService.getDistrictByProvinceId(provinceId);
@@ -27,6 +28,8 @@ public class DistrictController {
     }
 
 
+
+    // pass
     @PostMapping("/management/districts")
     public ResponseEntity<DistrictResponse> createDistrict(
             @Valid @RequestBody DistrictCreateRequest districtCreateRequest
@@ -36,6 +39,8 @@ public class DistrictController {
         );
     }
 
+
+    // pass
     @GetMapping("/management/districts")
     public ResponseEntity<PageResponse<DistrictResponse>> getDistricts(
             @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,
