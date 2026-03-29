@@ -36,13 +36,11 @@ public class CountryController {
     }
 
 
-    // checked
     @GetMapping({"/employee/countries"})
     public ResponseEntity<List<CountryResponse>> getCountries(){
         return ResponseEntity.ok(countryService.getCountries());
     }
 
-    // checked
     @PostMapping("/management/countries")
     public ResponseEntity<CountryResponse> createCountry(
             @RequestBody @Valid final CountryCreateRequest countryCreateRequest,
@@ -57,7 +55,6 @@ public class CountryController {
                 .body(countrySaved);
     }
 
-    // checked
 
     @PutMapping("/management/countries/{id}")
     public ResponseEntity<Void> updateCountry(@PathVariable Long id,

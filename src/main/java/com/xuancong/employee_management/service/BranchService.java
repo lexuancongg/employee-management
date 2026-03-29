@@ -39,7 +39,6 @@ public class BranchService {
         branch.setName(branchCreateRequest.name());
         Address address = new Address();
         this.setAddress(address,branchCreateRequest.address());
-
         branch.setAddress(address);
         branchRepository.save(branch);
         return BranchResponse.fromBranch(branch);

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import positionService from '@/services/positions/positionService';
 import { PositionResponse } from '@/models/positions/positionResponse';
 import { PageResponse } from '@/models/page/pageResponse';
@@ -9,7 +10,6 @@ import Pagination from '@/components/pagination/pagination';
 import PositionFormModal from '@/components/position/PositionFormModal';
 import ConfirmationDialog from '@/components/dialog/confirmDialog';
 
-
 export default function PositionsPage() {
   const [positions, setPositions] = useState<PositionResponse[]>([]);
   const [pageIndex, setPageIndex] = useState(0);
@@ -17,10 +17,9 @@ export default function PositionsPage() {
   const [totalPages, setTotalPages] = useState(0);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
-  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [selected, setSelected] = useState<PositionResponse | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
-
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchPositions = useCallback(async () => {
     setLoading(true);
@@ -35,105 +34,90 @@ export default function PositionsPage() {
     }
   }, [pageIndex, keyword]);
 
-  useEffect(() => {
-    fetchPositions();
-  }, [fetchPositions]);
-
-
-
+  useEffect(() => { fetchPositions(); }, [fetchPositions]);
 
   const handleDelete = async (id: number) => {
-    positionService.deletePosition(id)
-      .then(res => {
-        if (res.ok) {
-          fetchPositions();
-        }
-      })
-      .catch((err) => {
-        console.log(err)
-      })
-  }
+    try {
+      await positionService.deletePosition(id);
+      fetchPositions();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
-    <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold">Positions</h1>
-          <p className="text-gray-500 text-sm">Manage positions</p>
+          <h1 className="text-3xl font-extrabold text-gray-900">Positions</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage positions</p>
         </div>
         <button
           onClick={() => setOpen(true)}
-          className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-80"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:opacity-90 transition text-sm font-semibold"
         >
-          + Add
+          <PlusIcon className="w-4 h-4" />
+          Add Position
         </button>
       </div>
 
-
-
-
-      <input
-        onChange={(e) => {
-          const value = e.target.value;
-          if (searchTimeoutRef.current) {
-            clearTimeout(searchTimeoutRef.current)
-          }
-          searchTimeoutRef.current = setTimeout(
-            () => {
-              setKeyword(value)
-              setPageIndex(0)
-            }, 500
-          )
-
-
-        }}
-        placeholder="Search..."
-        className="w-full border rounded-xl px-4 py-2 focus:outline-none focus:ring-2 focus:ring-black"
-      />
+      {/* Search */}
+      <div className="relative max-w-sm">
+        <input
+          type="text"
+          placeholder="Search positions..."
+          className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition"
+          onChange={(e) => {
+            const value = e.target.value;
+            if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+            searchTimeoutRef.current = setTimeout(() => {
+              setKeyword(value);
+              setPageIndex(0);
+            }, 500);
+          }}
+        />
+      </div>
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100 text-left text-sm">
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table className="w-full text-sm text-gray-700">
+          <thead className="bg-gray-50 text-left text-xs uppercase tracking-wider text-gray-500">
             <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Name</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="px-6 py-3.5 font-semibold">#</th>
+              <th className="px-6 py-3.5 font-semibold">Position Name</th>
+              <th className="px-6 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={3} className="p-6 text-center text-gray-500">
-                  Loading...
-                </td>
+                <td colSpan={3} className="px-6 py-12 text-center text-gray-400">Loading...</td>
               </tr>
             ) : positions.length === 0 ? (
               <tr>
-                <td colSpan={3} className="p-6 text-center text-gray-400">
-                  No data
-                </td>
+                <td colSpan={3} className="px-6 py-12 text-center text-gray-400">No positions found</td>
               </tr>
             ) : (
-              positions.map((p) => (
-                <tr key={p.id} className="border-t hover:bg-gray-50">
-                  <td className="p-4">{p.id}</td>
-                  <td className="p-4 font-medium">{p.name}</td>
-                  <td className="p-4 text-right space-x-2">
+              positions.map((p, idx) => (
+                <tr key={p.id} className="hover:bg-indigo-50/40 transition-colors">
+                  <td className="px-6 py-4 text-gray-400">{pageIndex * 10 + idx + 1}</td>
+                  <td className="px-6 py-4 font-medium">{p.name}</td>
+                  <td className="px-6 py-4 text-right flex justify-end gap-2">
                     <button
-                      onClick={() => {
-                        setSelected(p);
-                        setOpen(true);
-                      }}
-                      className="px-3 py-1 border rounded-lg hover:bg-gray-100"
+                      onClick={() => { setSelected(p); setOpen(true); }}
+                      className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition"
+                      title="Edit"
                     >
-                      Edit
+                      <PencilIcon className="w-4 h-4 text-indigo-600" />
                     </button>
                     <button
                       onClick={() => setDeleteId(p.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                      className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition"
+                      title="Delete"
                     >
-                      Delete
+                      <TrashIcon className="w-4 h-4 text-red-500" />
                     </button>
                   </td>
                 </tr>
@@ -143,6 +127,7 @@ export default function PositionsPage() {
         </table>
       </div>
 
+      {/* Pagination */}
       <Pagination
         pageIndex={pageIndex}
         totalPages={totalPages}
@@ -150,15 +135,10 @@ export default function PositionsPage() {
         onNext={() => setPageIndex((prev) => prev + 1)}
       />
 
-
-
-
+      {/* Form Modal */}
       <PositionFormModal
         open={open}
-        onClose={() => {
-          setOpen(false);
-          setSelected(null);
-        }}
+        onClose={() => { setOpen(false); setSelected(null); }}
         onSubmit={async (position: PositionCreateRequest) => {
           if (selected) {
             await positionService.updatePosition(selected.id, position);
@@ -172,7 +152,7 @@ export default function PositionsPage() {
         defaultValues={selected ? { name: selected.name } : undefined}
       />
 
-      
+      {/* Confirm Delete */}
       <ConfirmationDialog
         isShow={deleteId !== null}
         title="Confirm delete"

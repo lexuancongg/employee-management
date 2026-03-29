@@ -18,17 +18,27 @@ import java.util.List;
 public class BranchController {
     private final BranchService branchService;
 
+    // pass
     @PostMapping("/management/branchs")
     public ResponseEntity<BranchResponse> create(@Valid @RequestBody BranchCreateRequest branchCreateRequest){
         return ResponseEntity.ok(branchService.create(branchCreateRequest));
     }
 
+
+
+
+
+
+    // pass
     @DeleteMapping("/management/branchs/{id}")
     public ResponseEntity<BranchResponse> delete(@PathVariable Long id){
         branchService.delete(id);
         return ResponseEntity.ok().build();
     }
 
+
+
+    // pass
     @PutMapping("/management/branchs/{id}")
     public ResponseEntity<Void> update(@PathVariable Long id,
                                        @Valid @RequestBody BranchCreateRequest branchCreateRequest){
@@ -38,6 +48,8 @@ public class BranchController {
     }
 
 
+
+    // pass
     @GetMapping("/management/branchs")
     public ResponseEntity<PageResponse<BranchResponse>> getBranchs(
             @RequestParam(name = "keyword",defaultValue = "" ,required = false) String keyword,

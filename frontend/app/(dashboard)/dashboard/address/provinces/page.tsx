@@ -1,24 +1,21 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { MagnifyingGlassIcon, PlusIcon, PencilIcon, TrashIcon, MapPinIcon } from '@heroicons/react/24/outline';
 import { PageResponse } from '@/models/page/pageResponse';
 import provinceService from '@/services/province/provinceService';
 import countryService from '@/services/country/countryService';
 import { CountryResponse } from '@/models/country/countryResponse';
-import dynamic from 'next/dynamic';
-
-const ReactSelect = dynamic(() => import('react-select'), { ssr: false });
-
-
 import Pagination from '@/components/pagination/pagination';
 import ProvinceFormModal from '@/components/province/provinceFormModal';
 import ConfirmationDialog from '@/components/dialog/confirmDialog';
+import dynamic from 'next/dynamic';
+const ReactSelect = dynamic(() => import('react-select'), { ssr: false });
 
 export default function ProvincePage() {
   const [provinces, setProvinces] = useState<ProvinceResponse[]>([]);
   const [countries, setCountries] = useState<CountryResponse[]>([]);
   const [countryId, setCountryId] = useState<number | undefined>(undefined);
-
 
   const [pageIndex, setPageIndex] = useState(0);
   const [keyword, setKeyword] = useState('');
@@ -31,27 +28,15 @@ export default function ProvincePage() {
 
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const fetchCountries = useCallback(async () => {
-    try {
-      const res = await countryService.getCountries();
-      setCountries(res);
-    } catch (err) {
-      console.error(err);
-    }
-  }, []);
-
   useEffect(() => {
-    fetchCountries();
-
+    countryService.getCountries().then(setCountries).catch(console.error);
   }, []);
 
-  // fetch provinces
   const fetchProvinces = useCallback(async () => {
     setLoading(true);
     try {
       const res: PageResponse<ProvinceResponse> =
         await provinceService.getProvinces(pageIndex, keyword, countryId);
-
       setProvinces(res.content);
       setTotalPages(res.totalPages);
     } catch (err) {
@@ -61,76 +46,72 @@ export default function ProvincePage() {
     }
   }, [pageIndex, keyword, countryId]);
 
-  useEffect(() => {
-    fetchProvinces();
-  }, [fetchProvinces]);
+  useEffect(() => { fetchProvinces(); }, [fetchProvinces]);
 
-  // delete
   const handleDelete = async (id: number) => {
     try {
-      const res = await provinceService.deleteProvince(id);
+      await provinceService.deleteProvince(id);
       fetchProvinces();
     } catch (err) {
       console.error(err);
     }
   };
 
-  return (
-    <div className="p-6 space-y-6">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold">Province</h1>
-          <p className="text-gray-500 text-sm">Manage provinces</p>
-        </div>
+  const selectClass = "border border-gray-200 px-3 py-2.5 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition";
 
+  return (
+    <div className="p-6 space-y-6 bg-gray-50 min-h-screen">
+
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Provinces</h1>
+          <p className="text-gray-500 text-sm mt-1">Manage province master data</p>
+        </div>
         <button
           onClick={() => setOpen(true)}
-          className="bg-black text-white px-4 py-2 rounded-xl hover:opacity-80"
+          className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg hover:opacity-90 transition text-sm font-semibold"
         >
-          + Add
+          <PlusIcon className="w-4 h-4" />
+          Add Province
         </button>
       </div>
 
-      {/* Search (debounce) */}
-      <div className="flex gap-4">
+      {/* Filters */}
+      <div className="flex flex-wrap gap-3">
         {/* Search */}
-        <input
-          onChange={(e) => {
-            const value = e.target.value;
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <MagnifyingGlassIcon className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            onChange={(e) => {
+              const value = e.target.value;
+              if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+              searchTimeoutRef.current = setTimeout(() => {
+                setKeyword(value);
+                setPageIndex(0);
+              }, 500);
+            }}
+            placeholder="Search provinces..."
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-300 focus:border-indigo-400 transition"
+          />
+        </div>
 
-            if (searchTimeoutRef.current) {
-              clearTimeout(searchTimeoutRef.current);
-            }
-
-            searchTimeoutRef.current = setTimeout(() => {
-              setKeyword(value);
-              setPageIndex(0);
-            }, 500);
-          }}
-          placeholder="Search..."
-          className="flex-1 border px-4 py-2 rounded-xl"
-        />
-
-        {/* Filter country */}
+        {/* Country filter */}
         <select
           value={countryId ?? ''}
           onChange={(e) => {
-            const value = e.target.value;
-            setCountryId(value === '' ? undefined : Number(value));
+            setCountryId(e.target.value === '' ? undefined : Number(e.target.value));
             setPageIndex(0);
           }}
-          className="border px-4 py-2 rounded-xl"
+          className={selectClass}
         >
           <option value="">All countries</option>
           {countries.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name}
-            </option>
+            <option key={c.id} value={c.id}>{c.name}</option>
           ))}
         </select>
-
-        <ReactSelect
+        
+        {/* <ReactSelect
           options={countries.map(c => ({ value: c.id, label: c.name }))}
           value={countries.find(c => c.id === countryId) ? { value: countryId, label: countries.find(c => c.id === countryId)?.name } : null}
           onChange={(selectedOption) => {
@@ -139,60 +120,79 @@ export default function ProvincePage() {
           }}
           isClearable
           placeholder="Select country..."
-        />
+        /> */}
+        
       </div>
+       
 
       {/* Table */}
-      <div className="bg-white rounded-2xl shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-100 text-left text-sm">
-            <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Name</th>
-              <th className="p-4">Country</th>
-              <th className="p-4">Type</th>
-              <th className="p-4 text-right">Actions</th>
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+        <table className="w-full text-sm text-gray-700">
+          <thead>
+            <tr className="bg-gray-50 border-b border-gray-200 text-xs uppercase tracking-wider text-gray-500">
+              <th className="px-6 py-3.5 text-left font-semibold">#</th>
+              <th className="px-6 py-3.5 text-left font-semibold">Province Name</th>
+              <th className="px-6 py-3.5 text-left font-semibold">Country</th>
+              <th className="px-6 py-3.5 text-left font-semibold">Type</th>
+              <th className="px-6 py-3.5 text-right font-semibold">Actions</th>
             </tr>
           </thead>
-
-          <tbody>
+          <tbody className="divide-y divide-gray-100">
             {loading ? (
               <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-500">
-                  Loading...
+                <td colSpan={5} className="px-6 py-12 text-center">
+                  <div className="flex items-center justify-center gap-2 text-gray-400">
+                    <div className="w-4 h-4 border-2 border-indigo-400 border-t-transparent rounded-full animate-spin" />
+                    Loading...
+                  </div>
                 </td>
               </tr>
             ) : provinces.length === 0 ? (
               <tr>
-                <td colSpan={5} className="p-6 text-center text-gray-400">
-                  No data
+                <td colSpan={5} className="px-6 py-16 text-center">
+                  <MapPinIcon className="w-10 h-10 mx-auto text-gray-200 mb-3" />
+                  <p className="text-gray-400 text-sm">No provinces found</p>
                 </td>
               </tr>
             ) : (
-              provinces.map((p) => (
-                <tr key={p.id} className="border-t hover:bg-gray-50">
-                  <td className="p-4">{p.id}</td>
-                  <td className="p-4 font-medium">{p.name}</td>
-                  <td className="p-4">{p.countryName}</td>
-                  <td className="p-4">{p.type}</td>
-
-                  <td className="p-4 text-right space-x-2">
-                    <button
-                      onClick={() => {
-                        setSelected(p);
-                        setOpen(true);
-                      }}
-                      className="px-3 py-1 border rounded-lg hover:bg-gray-100"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => setDeleteId(p.id)}
-                      className="px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                    >
-                      Delete
-                    </button>
+              provinces.map((p, idx) => (
+                <tr key={p.id} className="hover:bg-indigo-50/40 transition-colors">
+                  <td className="px-6 py-4 text-gray-400 text-xs">{pageIndex * 10 + idx + 1}</td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                        <MapPinIcon className="w-4 h-4 text-indigo-500" />
+                      </div>
+                      <span className="font-medium text-gray-800">{p.name}</span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700">
+                      {p.countryName}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
+                      {p.type}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => { setSelected(p); setOpen(true); }}
+                        className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-indigo-50 hover:border-indigo-300 transition"
+                        title="Edit"
+                      >
+                        <PencilIcon className="w-4 h-4 text-indigo-600" />
+                      </button>
+                      <button
+                        onClick={() => setDeleteId(p.id)}
+                        className="w-8 h-8 flex items-center justify-center border border-gray-200 rounded-lg hover:bg-red-50 hover:border-red-300 transition"
+                        title="Delete"
+                      >
+                        <TrashIcon className="w-4 h-4 text-red-500" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))
@@ -205,36 +205,29 @@ export default function ProvincePage() {
       <Pagination
         pageIndex={pageIndex}
         totalPages={totalPages}
-        onPrev={() => setPageIndex((prev) => prev - 1)}
-        onNext={() => setPageIndex((prev) => prev + 1)}
+        onPrev={() => setPageIndex(prev => prev - 1)}
+        onNext={() => setPageIndex(prev => prev + 1)}
       />
 
+      {/* Form Modal */}
       <ProvinceFormModal
         open={open}
         countries={countries}
-        onClose={() => {
-          setOpen(false);
-          setSelected(null);
-        }}
+        onClose={() => { setOpen(false); setSelected(null); }}
         onSubmit={async (province: ProvinceCreateRequest) => {
           if (selected) {
             await provinceService.updateProvince(selected.id, province);
           } else {
             await provinceService.createProvince(province);
           }
-
           setOpen(false);
           setSelected(null);
           fetchProvinces();
         }}
-        defaultValues={
-          selected
-            ? selected
-            : undefined
-        }
+        defaultValues={selected ?? undefined}
       />
 
-      {/* Confirm delete */}
+      {/* Confirm Delete */}
       <ConfirmationDialog
         isShow={deleteId !== null}
         title="Confirm delete"
