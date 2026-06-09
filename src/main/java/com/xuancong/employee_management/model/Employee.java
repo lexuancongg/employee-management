@@ -51,4 +51,11 @@ public class Employee extends BaseAuditEntity {
     @JoinColumn(name = "address_id")
     private Address address;
 
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_title_id", nullable = false)
+    private JobTitle jobTitle;
+
+
+
 }

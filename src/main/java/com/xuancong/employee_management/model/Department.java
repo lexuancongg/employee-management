@@ -20,5 +20,8 @@ public class Department extends BaseAuditEntity {
     @JoinColumn(name = "branch_id")
     private Branch branch;
 
+    @OneToOne
+    @JoinColumn(name = "manager_id")
+    private Employee manager;
 
 }
