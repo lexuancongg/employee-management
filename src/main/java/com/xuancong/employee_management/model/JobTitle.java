@@ -22,7 +22,7 @@ public class JobTitle extends BaseAuditEntity {
     private String name;
 
     private String description;
-
-    @OneToMany(mappedBy = "jobTitle")
-    private List<Employee> employees;
+//
+//    @OneToMany(mappedBy = "jobTitle")
+//    private List<Employee> employees;
 }

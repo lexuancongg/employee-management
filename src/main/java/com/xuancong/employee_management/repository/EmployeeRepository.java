@@ -30,4 +30,7 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> , JpaS
     Optional<Employee> findByUser_Id(Long userId);
 
 
+    @Query(value = "SELECT nextval('employee_code_seq')", nativeQuery = true)
+    Long nextEmployeeCodeSeq();
+
 }

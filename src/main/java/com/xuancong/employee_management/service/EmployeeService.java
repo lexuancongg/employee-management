@@ -107,14 +107,8 @@ public class EmployeeService {
 
     // có thể trùng code nếu hai req gởi cùng lúc=> chạy song song hai thread => fix bằng SEQUENCE
     private String generateEmployeeCode() {
-        String maxCode = employeeRepository.findMaxEmployeeCode();
-
-        if (maxCode == null) {
-            return "EMP0001";
-        }
-
-        int number = Integer.parseInt(maxCode.substring(3));
-        return String.format("EMP%04d", number + 1);
+        Long next = employeeRepository.nextEmployeeCodeSeq();
+        return String.format("EMP%04d", next);
     }
 
     private <E> void setEntityIfExistsOrThrow(Long id, Function<Long, Optional<E>> finderById, String errorKey, Consumer<E> setter) {

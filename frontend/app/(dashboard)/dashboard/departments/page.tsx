@@ -9,7 +9,7 @@ import { DepartmentCreateRequest, DepartmentResponse } from '@/models/department
 import departmentService from '@/services/department/departmentService';
 import DepartmentFormModal from '@/components/department/departmentFormModal';
 import { BranchResponse } from '@/models/branch/branchResponse';
-
+import { Search, Plus, Pencil, Trash2, Building2 } from "lucide-react";
 
 
 export default function DepartmentsPage() {
@@ -124,10 +124,16 @@ export default function DepartmentsPage() {
         <table className="w-full">
           <thead className="bg-gray-100 text-sm">
             <tr>
-              <th className="p-4">ID</th>
-              <th className="p-4">Name</th>
-              <th className="p-4">Branch</th>
-              <th className="p-4 text-right">Actions</th>
+              <th className="p-4">Stt</th>
+              <th className="p-4">Tên Phòng ban</th>
+                <th className="p-4">Mã phòng</th>
+                <th className="p-4">Trưởng phòng</th>
+                <th className="p-4">Nhân Viên</th>
+
+              <th className="p-4">Chi nhánh</th>
+                <th className="p-4">Trạng thái</th>
+
+              <th className="p-4 text-right">Thao tác</th>
             </tr>
           </thead>
 
@@ -149,7 +155,16 @@ export default function DepartmentsPage() {
                 <tr key={d.id} className="border-t hover:bg-gray-50">
                   <td className="p-4">{d.id}</td>
                   <td className="p-4 font-medium">{d.name}</td>
-                  <td className="p-4">{d.branchName}</td>
+                  <td className="p-4">{d.departmentCode}</td>
+                    <td className="p-4">{d.managerName}</td>
+                    <td className="p-4">{d.quantityEmployee}</td>
+                    <td className="p-4">{d.branchName}</td>
+                    <td className="p-4">{d.status}</td>
+
+
+
+
+
 
                   <td className="p-4 text-right space-x-2">
                     <button

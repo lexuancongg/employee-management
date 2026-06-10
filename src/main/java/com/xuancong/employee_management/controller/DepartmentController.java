@@ -18,11 +18,11 @@ import java.util.List;
 public class DepartmentController {
     private final DepartmentService departmentService;
 
-    // pass
         @PostMapping("/management/departments")
     public ResponseEntity<DepartmentResponse> createDepartment(@Valid @RequestBody DepartmentCreateRequest departmentCreateRequest) {
         return ResponseEntity.ok(
-                this.departmentService.createDepartment(departmentCreateRequest)
+                this.departmentService
+                        .createDepartment(departmentCreateRequest)
         );
 
     }

@@ -7,6 +7,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+
 @Configuration
 @EnableWebSocketMessageBroker
 
@@ -29,7 +30,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-
         registry.addEndpoint("/ws")
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
@@ -38,4 +38,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureClientInboundChannel(ChannelRegistration registration) {
         registration.interceptors(jwtChannelInterceptor);
     }
+//    @Bean
+//    public DefaultHandshakeHandler handshakeHandler() {
+//        JettyRequestUpgradeStrategy strategy = new JettyRequestUpgradeStrategy();
+//        strategy.addWebSocketConfigurer(configurable -> {
+//            configurable.setInputBufferSize(4 * 8192);
+//            configurable.setIdleTimeout(Duration.ofSeconds(600));
+//        });
+//        return new DefaultHandshakeHandler(strategy);
+//    }
 }

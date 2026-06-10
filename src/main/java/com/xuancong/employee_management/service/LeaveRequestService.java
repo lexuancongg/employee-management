@@ -2,10 +2,7 @@ package com.xuancong.employee_management.service;
 
 import com.xuancong.employee_management.dto.leaverequest.LeaveRequestCreateRequest;
 import com.xuancong.employee_management.dto.ws.NotificationMessage;
-import com.xuancong.employee_management.model.Employee;
-import com.xuancong.employee_management.model.LeaveRequest;
-import com.xuancong.employee_management.model.LeaveStatus;
-import com.xuancong.employee_management.model.NotificationType;
+import com.xuancong.employee_management.model.*;
 import com.xuancong.employee_management.repository.EmployeeRepository;
 import com.xuancong.employee_management.repository.LeaveRequestRepository;
 import com.xuancong.employee_management.utils.AuthenticationUtils;
@@ -52,8 +49,10 @@ public class LeaveRequestService {
                 saved.getId()
         );
 
+
+
         notificationService.sendToUser(
-                manager.getId(),
+                manager.getUser().getId(),
                 new NotificationMessage(
                         manager.getId(),
                         "Đơn xin nghỉ phép mới",

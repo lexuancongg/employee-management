@@ -9,6 +9,7 @@ import com.xuancong.employee_management.exception.NotFoundException;
 import com.xuancong.employee_management.exception.ResourceInUseException;
 import com.xuancong.employee_management.model.Branch;
 import com.xuancong.employee_management.model.Department;
+import com.xuancong.employee_management.model.Employee;
 import com.xuancong.employee_management.repository.BranchRepository;
 import com.xuancong.employee_management.repository.DepartmentRepository;
 import com.xuancong.employee_management.repository.EmployeeRepository;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -41,8 +43,14 @@ public class DepartmentService {
 
         this.validateDepartmentName(departmentCreateRequest.name(), null, branchId);
         Department department = departmentCreateRequest.toDepartment(branch);
+        Optional<Long> managerId = Optional.ofNullable(departmentCreateRequest.managerId());
+
+        managerId.flatMap(this.employeeRepository::findById)
+                .ifPresent(department::setManager);
+
         this.departmentRepository.save(department);
         return DepartmentResponse.fromDepartment(department);
+
 
     }
 
